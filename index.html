@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Trip Planner</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #f2f2f7; margin: 0; padding: 0; color: #1c1c1e; }
+  .app-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0369a1 100%); color: white; padding: 20px 16px 16px; position: sticky; top: 0; z-index: 20; }
+  .app-header h1 { font-size: 22px; font-weight: 700; margin: 0 0 2px 0; display: flex; align-items: center; gap: 8px; }
+  .app-header .subtitle { font-size: 13px; opacity: 0.85; margin-bottom: 14px; }
+  .top-buttons { display: flex; gap: 8px; margin-bottom: 4px; }
+  .icon-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 20px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; background: rgba(255,255,255,0.18); color: white; }
+  .icon-btn.clear { background: rgba(255,80,80,0.25); }
+  #csvInput { display: none; }
+  .segmented { display: flex; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 3px; margin-top: 12px; }
+  .segmented button { flex: 1; padding: 8px 4px; border: none; background: transparent; color: rgba(255,255,255,0.75); font-weight: 600; font-size: 13px; border-radius: 8px; cursor: pointer; }
+  .segmented button.active { background: white; color: #1e3a8a; }
+  .content { padding: 12px; padding-bottom: 40px; }
+  #errorBox { display: none; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 10px 12px; border-radius: 12px; font-size: 13px; margin-bottom: 12px; }
+  .filter-card { background: white; border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .filter-row-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #8e8e93; margin-bottom: 6px; margin-top: 10px; }
+  .filter-row-label:first-child { margin-top: 0; }
+  .chip-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; align-items: center; }
+  .chip-scroll::-webkit-scrollbar { display: none; }
+  .chip-divider { width: 2px; align-self: stretch; background: #d1d5db; margin: 0 4px; flex-shrink: 0; border-radius: 2px; }
+  .team-chip { flex-shrink: 0; padding: 7px 13px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid #e5e5ea; background: white; color: #3a3a3c; cursor: pointer; white-space: nowrap; }
+  .team-chip.active { background: #1e40af; border-color: #1e40af; color: white; }
+  .chip-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .chip-action-btn { font-size: 11px; font-weight: 700; color: #1e40af; background: none; border: none; cursor: pointer; padding: 2px 4px; }
+  .date-row { display: flex; gap: 8px; }
+  .date-row > div { flex: 1; }
+  input[type="date"], input[type="text"] { width: 100%; padding: 9px 10px; border: 1.5px solid #e5e5ea; border-radius: 10px; font-size: 14px; background: #f9f9fb; color: #1c1c1e; }
+  input[type="range"] { width: 100%; accent-color: #1e40af; }
+  .slider-value { font-weight: 700; color: #1e40af; }
+  .city-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  .month-header { font-size: 13px; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; padding: 14px 4px 6px; position: sticky; top: 118px; background: #f2f2f7; z-index: 5; }
+  .game-card { background: white; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; display: flex; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .sport-bar { width: 4px; border-radius: 4px; flex-shrink: 0; }
+  .sport-Football .sport-bar { background: #ea580c; }
+  .sport-Hockey .sport-bar { background: #0284c7; }
+  .sport-Baseball .sport-bar { background: #16a34a; }
+  .sport-Basketball .sport-bar { background: #d97706; }
+  .sport-Volleyball .sport-bar { background: #9333ea; }
+  .sport-Wrestling .sport-bar { background: #64748b; }
+  .game-date-block { text-align: center; flex-shrink: 0; width: 42px; }
+  .game-date-block .dow { font-size: 10px; font-weight: 700; color: #ef4444; text-transform: uppercase; }
+  .game-date-block .dom { font-size: 20px; font-weight: 800; color: #1c1c1e; line-height: 1.1; }
+  .game-info { flex: 1; min-width: 0; }
+  .game-team { font-weight: 700; font-size: 15px; color: #1c1c1e; }
+  .game-opp { font-size: 13px; color: #6b7280; margin-top: 1px; }
+  .game-meta-line { font-size: 12px; color: #9ca3af; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .pill { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+  .pill.home { background: #dcfce7; color: #15803d; }
+  .pill.away { background: #dbeafe; color: #1d4ed8; }
+  .pill.neutral { background: #f3e8ff; color: #7e22ce; }
+  .empty { text-align: center; color: #9ca3af; padding: 40px 20px; font-size: 14px; }
+  .trip-controls { background: white; border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .trip-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .trip-card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px; }
+  .trip-title { font-weight: 800; font-size: 16px; }
+  .trip-subtitle { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+  .trip-count-badge { background: #1e40af; color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
+  .timeline { position: relative; padding-left: 22px; }
+  .timeline-line { position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: #e5e5ea; }
+  .timeline-stop { position: relative; margin-bottom: 10px; }
+  .timeline-dot { position: absolute; left: -22px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: #1e40af; border: 2px solid white; box-shadow: 0 0 0 2px #1e40af; }
+  .timeline-stop-content { background: #f9f9fb; border-radius: 10px; padding: 10px 12px; }
+  .timeline-team { font-weight: 700; font-size: 14px; }
+  .timeline-opp { font-size: 12px; color: #6b7280; }
+  .timeline-meta { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+  .timeline-gap { font-size: 11px; color: #d97706; font-weight: 700; margin: 6px 0 6px -22px; padding-left: 22px; }
+  .trip-notes { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e5ea; }
+  .trip-notes-label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+  .trip-note-item { font-size: 12px; color: #6b7280; margin-top: 4px; }
+  .cal-controls { background: white; border-radius: 16px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-nav-btn { background: white; border: 1.5px solid #e5e5ea; border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; color: #1e40af; cursor: pointer; }
+  .cal-month-label { font-size: 16px; font-weight: 800; }
+  .cal-legend { display: flex; flex-wrap: wrap; gap: 8px; background: white; border-radius: 14px; padding: 10px 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .cal-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+  .cal-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: white; border-radius: 16px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cal-dow { text-align: center; font-size: 10px; font-weight: 800; color: #9ca3af; text-transform: uppercase; padding-bottom: 4px; }
+  .cal-cell { min-height: 62px; border-radius: 8px; background: #f9f9fb; padding: 3px; position: relative; display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .cal-cell.empty { background: transparent; cursor: default; }
+  .cal-cell.overlap { background: #fef3c7; box-shadow: inset 0 0 0 2px #f59e0b; }
+  .cal-cell.near-home { background: #ede9fe; box-shadow: inset 0 0 0 2px #7c3aed; }
+  .cal-cell.overlap.near-home { background: linear-gradient(135deg, #fef3c7 50%, #ede9fe 50%); box-shadow: inset 0 0 0 2px #7c3aed, inset 0 0 0 4px #f59e0b; }
+  .cal-cell.today { box-shadow: inset 0 0 0 2px #1e40af; }
+  .cal-cell.selected { outline: 2px solid #16a34a; outline-offset: -2px; }
+  .cal-daynum { font-size: 10px; font-weight: 700; color: #6b7280; }
+  .cal-dot-row { display: flex; flex-wrap: wrap; gap: 2px; }
+  .cal-dot { min-width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; }
+  .cal-more { font-size: 9px; color: #9ca3af; font-weight: 700; }
+  .cal-overlap-flag { position: absolute; top: 2px; right: 3px; font-size: 9px; }
+  .cal-day-panel { background: white; border-radius: 16px; padding: 14px; margin-top: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cal-day-panel-title { font-weight: 800; font-size: 15px; margin-bottom: 8px; }
+  .expand-btn { display: inline-flex; align-items: center; gap: 6px; background: #1e40af; color: white; border: none; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+  .cal-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; }
+  .cal-modal-overlay.open { display: flex; }
+  .cal-modal-box { background: #f2f2f7; border-radius: 20px; max-width: 1400px; width: 100%; padding: 24px; position: relative; }
+  .cal-modal-close { position: absolute; top: 16px; right: 16px; background: #e5e5ea; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; z-index: 5; }
+  .cal-modal-box .cal-month-label { font-size: 22px; }
+  .cal-modal-box .cal-legend-item { font-size: 12px; }
+  .cal-grid-lg { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: white; border-radius: 16px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cal-dow-lg { text-align: center; font-size: 12px; font-weight: 800; color: #9ca3af; text-transform: uppercase; padding-bottom: 6px; }
+  .cal-cell-lg { min-height: 130px; border-radius: 10px; background: #f9f9fb; padding: 6px; position: relative; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+  .cal-cell-lg.empty { background: transparent; cursor: default; }
+  .cal-cell-lg.overlap { background: #fef3c7; box-shadow: inset 0 0 0 2px #f59e0b; }
+  .cal-cell-lg.near-home { background: #ede9fe; box-shadow: inset 0 0 0 2px #7c3aed; }
+  .cal-cell-lg.overlap.near-home { background: linear-gradient(135deg, #fef3c7 50%, #ede9fe 50%); box-shadow: inset 0 0 0 2px #7c3aed, inset 0 0 0 4px #f59e0b; }
+  .cal-cell-lg.today { box-shadow: inset 0 0 0 2px #1e40af; }
+  .cal-cell-lg.selected { outline: 2px solid #16a34a; outline-offset: -2px; }
+  .cal-daynum-lg { font-size: 13px; font-weight: 700; color: #6b7280; margin-bottom: 2px; }
+  .cal-bar { border-radius: 5px; padding: 2px 6px; font-size: 10px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-bar-more { font-size: 10px; color: #9ca3af; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!--
+  STILL MISSING FROM DATA (not shown in UI per user request, tracked here instead):
+  Pitt Volleyball, Pitt Baseball, Pitt Wrestling, Duquesne Volleyball, Duquesne Basketball, WWE.
+  When added via CSV: "Pitt Volleyball" should default to SELECTED; all others default DESELECTED.
+-->
+
+<div class="app-header">
+  <h1>📍 Sports Trip Planner</h1>
+  <div class="subtitle" id="headerSubtitle">Loading...</div>
+  <div class="top-buttons">
+    <label class="icon-btn" for="csvInput">⬆ Upload CSV</label>
+    <input type="file" id="csvInput" accept=".csv" />
+    <button class="icon-btn clear" onclick="clearAll()">✕ Clear Added Games</button>
+  </div>
+  <div class="segmented">
+    <button class="active" id="listTabBtn" onclick="setView('list')">📋 Schedule</button>
+    <button id="calTabBtn" onclick="setView('calendar')">🗓️ Calendar</button>
+    <button id="tripsTabBtn" onclick="setView('trips')">✈️ Trips</button>
+  </div>
+</div>
+
+<div class="content">
+  <div id="errorBox"></div>
+
+  <div class="filter-card" id="listFilters">
+    <div class="filter-row-label">Teams</div>
+    <div class="chip-scroll" id="teamButtons"></div>
+    <div class="chip-actions">
+      <button class="chip-action-btn" onclick="selectAllTeams()">Select All</button>
+      <button class="chip-action-btn" onclick="deselectAllTeams()">Deselect All</button>
+    </div>
+    <div class="filter-row-label">Date Range</div>
+    <div class="date-row">
+      <div><input type="date" id="startDate" /></div>
+      <div><input type="date" id="endDate" /></div>
+    </div>
+    <div class="filter-row-label">City (shows anything within 100 mi)</div>
+    <input type="text" id="cityFilter" placeholder="e.g. Pittsburgh, Cleveland, London..." />
+    <div class="city-hint" id="cityHint"></div>
+  </div>
+
+  <div id="listView"><div id="gameListContainer"></div></div>
+
+  <div id="calendarView" style="display:none;">
+    <button class="expand-btn" onclick="openCalModal()">⛶ Expand Calendar</button>
+    <div class="cal-controls">
+      <div class="filter-row-label">Max Days: <span class="slider-value" id="calDaysLabel">4</span></div>
+      <input type="range" id="calDaysSlider" min="1" max="14" value="4" />
+      <div class="filter-row-label">Highlight: Max Distance: <span class="slider-value" id="calMilesLabel">75</span> mi</div>
+      <input type="range" id="calMilesSlider" min="0" max="500" step="5" value="75" />
+    </div>
+    <div class="cal-legend" id="calLegend"></div>
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="shiftMonth(-1)">‹</button>
+      <div class="cal-month-label" id="calMonthLabel"></div>
+      <button class="cal-nav-btn" onclick="shiftMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div id="calDayPanel"></div>
+  </div>
+
+  <div id="tripsView" style="display:none;">
+    <div class="trip-controls">
+      <div class="filter-row-label">Max Days: <span class="slider-value" id="maxDaysLabel">4</span></div>
+      <input type="range" id="maxDaysSlider" min="1" max="14" value="4" />
+      <div class="filter-row-label">Max Distance Between Stops: <span class="slider-value" id="maxMilesLabel">75</span> mi</div>
+      <input type="range" id="maxMilesSlider" min="0" max="500" step="5" value="75" />
+    </div>
+    <div id="tripList"></div>
+  </div>
+</div>
+
+<div class="cal-modal-overlay" id="calModalOverlay">
+  <div class="cal-modal-box">
+    <button class="cal-modal-close" onclick="closeCalModal()">✕</button>
+    <div class="cal-legend" id="calLegendModal"></div>
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="shiftMonth(-1)">‹</button>
+      <div class="cal-month-label" id="calMonthLabelModal"></div>
+      <button class="cal-nav-btn" onclick="shiftMonth(1)">›</button>
+    </div>
+    <div class="cal-grid-lg" id="calGridModal"></div>
+    <div id="calDayPanelModal"></div>
+  </div>
+</div>
+
+<script>
+var mlbVenues = {
+  'Pittsburgh Pirates': { venue: 'PNC Park', city: 'Pittsburgh, PA' },
+  'Cleveland Guardians': { venue: 'Progressive Field', city: 'Cleveland, OH' },
+  'Milwaukee Brewers': { venue: 'American Family Field', city: 'Milwaukee, WI' },
+  'New York Yankees': { venue: 'Yankee Stadium', city: 'Bronx, NY' },
+  'Chicago Cubs': { venue: 'Wrigley Field', city: 'Chicago, IL' },
+  'Arizona Diamondbacks': { venue: 'Chase Field', city: 'Phoenix, AZ' },
+  'Cincinnati Reds': { venue: 'Great American Ball Park', city: 'Cincinnati, OH' },
+  'New York Mets': { venue: 'Citi Field', city: 'Queens, NY' },
+  'Miami Marlins': { venue: 'loanDepot Park', city: 'Miami, FL' },
+  'Boston Red Sox': { venue: 'Fenway Park', city: 'Boston, MA' },
+  'Detroit Tigers': { venue: 'Comerica Park', city: 'Detroit, MI' },
+  'Los Angeles Dodgers': { venue: 'Dodger Stadium', city: 'Los Angeles, CA' },
+  'San Diego Padres': { venue: 'Petco Park', city: 'San Diego, CA' },
+  'St. Louis Cardinals': { venue: 'Busch Stadium', city: 'St. Louis, MO' },
+  'San Francisco Giants': { venue: 'Oracle Park', city: 'San Francisco, CA' },
+  'Los Angeles Angels': { venue: 'Angel Stadium', city: 'Anaheim, CA' },
+  'Chicago White Sox': { venue: 'Rate Field', city: 'Chicago, IL' },
+  'Kansas City Royals': { venue: 'Kauffman Stadium', city: 'Kansas City, MO' },
+  'Minnesota Twins': { venue: 'Target Field', city: 'Minneapolis, MN' },
+  'Tampa Bay Rays': { venue: 'Steinbrenner Field', city: 'Tampa, FL' },
+  'Baltimore Orioles': { venue: 'Oriole Park at Camden Yards', city: 'Baltimore, MD' },
+  'Colorado Rockies': { venue: 'Coors Field', city: 'Denver, CO' },
+  'Toronto Blue Jays': { venue: 'Rogers Centre', city: 'Toronto, ON' },
+  'Athletics': { venue: 'Sutter Health Park', city: 'West Sacramento, CA' }
+};
+
+function buildMlbGames(teamName, raws) {
+  return raws.map(function(g) {
+    var isHome = g.raw.indexOf(' at ' + teamName) !== -1;
+    var opponent = isHome ? g.raw.replace(' at ' + teamName, '') : g.raw.replace(teamName + ' at ', '');
+    var venueInfo = isHome ? mlbVenues[teamName] : mlbVenues[opponent];
+    return { date: g.date, time: g.time, team: teamName, opponent: opponent, homeAway: isHome ? 'Home' : 'Away', venue: venueInfo ? venueInfo.venue : 'TBD', city: venueInfo ? venueInfo.city : 'TBD', sport: 'Baseball' };
+  });
+}
+
+var piratesRaw = [
+  { date: '2026-07-10', time: '6:40 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-07-11', time: '4:05 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-07-12', time: '12:15 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-07-17', time: '7:10 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-18', time: '4:10 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-19', time: '1:40 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-20', time: '7:05 PM', raw: 'Pittsburgh Pirates at New York Yankees' },
+  { date: '2026-07-21', time: '7:05 PM', raw: 'Pittsburgh Pirates at New York Yankees' },
+  { date: '2026-07-22', time: '1:35 PM', raw: 'Pittsburgh Pirates at New York Yankees' },
+  { date: '2026-07-24', time: '6:40 PM', raw: 'Chicago Cubs at Pittsburgh Pirates' },
+  { date: '2026-07-25', time: '6:40 PM', raw: 'Chicago Cubs at Pittsburgh Pirates' },
+  { date: '2026-07-26', time: '1:35 PM', raw: 'Chicago Cubs at Pittsburgh Pirates' },
+  { date: '2026-07-27', time: '6:40 PM', raw: 'Arizona Diamondbacks at Pittsburgh Pirates' },
+  { date: '2026-07-28', time: '6:40 PM', raw: 'Arizona Diamondbacks at Pittsburgh Pirates' },
+  { date: '2026-07-29', time: '12:35 PM', raw: 'Arizona Diamondbacks at Pittsburgh Pirates' },
+  { date: '2026-07-30', time: '7:10 PM', raw: 'Pittsburgh Pirates at Cincinnati Reds' },
+  { date: '2026-07-31', time: '6:10 PM', raw: 'Pittsburgh Pirates at Cincinnati Reds' },
+  { date: '2026-08-01', time: '6:40 PM', raw: 'Pittsburgh Pirates at Cincinnati Reds' },
+  { date: '2026-08-02', time: '1:40 PM', raw: 'Pittsburgh Pirates at Cincinnati Reds' },
+  { date: '2026-08-03', time: '7:40 PM', raw: 'Pittsburgh Pirates at Milwaukee Brewers' },
+  { date: '2026-08-04', time: '7:40 PM', raw: 'Pittsburgh Pirates at Milwaukee Brewers' },
+  { date: '2026-08-05', time: '7:40 PM', raw: 'Pittsburgh Pirates at Milwaukee Brewers' },
+  { date: '2026-08-06', time: '2:10 PM', raw: 'Pittsburgh Pirates at Milwaukee Brewers' },
+  { date: '2026-08-07', time: '6:40 PM', raw: 'New York Mets at Pittsburgh Pirates' },
+  { date: '2026-08-08', time: '6:40 PM', raw: 'New York Mets at Pittsburgh Pirates' },
+  { date: '2026-08-09', time: '1:35 PM', raw: 'New York Mets at Pittsburgh Pirates' },
+  { date: '2026-08-11', time: '6:40 PM', raw: 'Pittsburgh Pirates at Miami Marlins' },
+  { date: '2026-08-12', time: '6:40 PM', raw: 'Pittsburgh Pirates at Miami Marlins' },
+  { date: '2026-08-13', time: '1:10 PM', raw: 'Pittsburgh Pirates at Miami Marlins' },
+  { date: '2026-08-14', time: '6:40 PM', raw: 'Boston Red Sox at Pittsburgh Pirates' },
+  { date: '2026-08-15', time: '6:40 PM', raw: 'Boston Red Sox at Pittsburgh Pirates' },
+  { date: '2026-08-16', time: '1:35 PM', raw: 'Boston Red Sox at Pittsburgh Pirates' },
+  { date: '2026-08-17', time: '7:05 PM', raw: 'Detroit Tigers at Pittsburgh Pirates' },
+  { date: '2026-08-18', time: '6:40 PM', raw: 'Detroit Tigers at Pittsburgh Pirates' },
+  { date: '2026-08-19', time: '12:35 PM', raw: 'Detroit Tigers at Pittsburgh Pirates' },
+  { date: '2026-08-21', time: '10:10 PM', raw: 'Pittsburgh Pirates at Los Angeles Dodgers' },
+  { date: '2026-08-22', time: '9:10 PM', raw: 'Pittsburgh Pirates at Los Angeles Dodgers' },
+  { date: '2026-08-23', time: '4:10 PM', raw: 'Pittsburgh Pirates at Los Angeles Dodgers' },
+  { date: '2026-08-24', time: '9:40 PM', raw: 'Pittsburgh Pirates at San Diego Padres' },
+  { date: '2026-08-25', time: '9:40 PM', raw: 'Pittsburgh Pirates at San Diego Padres' },
+  { date: '2026-08-26', time: '4:10 PM', raw: 'Pittsburgh Pirates at San Diego Padres' },
+  { date: '2026-08-28', time: '8:15 PM', raw: 'Pittsburgh Pirates at St. Louis Cardinals' },
+  { date: '2026-08-29', time: '2:15 PM', raw: 'Pittsburgh Pirates at St. Louis Cardinals' },
+  { date: '2026-08-30', time: '2:15 PM', raw: 'Pittsburgh Pirates at St. Louis Cardinals' },
+  { date: '2026-09-01', time: '6:40 PM', raw: 'San Francisco Giants at Pittsburgh Pirates' },
+  { date: '2026-09-02', time: '6:40 PM', raw: 'San Francisco Giants at Pittsburgh Pirates' },
+  { date: '2026-09-03', time: '12:35 PM', raw: 'San Francisco Giants at Pittsburgh Pirates' },
+  { date: '2026-09-04', time: '6:40 PM', raw: 'Los Angeles Angels at Pittsburgh Pirates' },
+  { date: '2026-09-05', time: '6:40 PM', raw: 'Los Angeles Angels at Pittsburgh Pirates' },
+  { date: '2026-09-06', time: '1:35 PM', raw: 'Los Angeles Angels at Pittsburgh Pirates' },
+  { date: '2026-09-08', time: '7:40 PM', raw: 'Pittsburgh Pirates at Chicago White Sox' },
+  { date: '2026-09-09', time: '7:40 PM', raw: 'Pittsburgh Pirates at Chicago White Sox' },
+  { date: '2026-09-10', time: '7:40 PM', raw: 'Pittsburgh Pirates at Chicago White Sox' },
+  { date: '2026-09-11', time: '2:20 PM', raw: 'Pittsburgh Pirates at Chicago Cubs' },
+  { date: '2026-09-12', time: '2:20 PM', raw: 'Pittsburgh Pirates at Chicago Cubs' },
+  { date: '2026-09-13', time: '2:20 PM', raw: 'Pittsburgh Pirates at Chicago Cubs' },
+  { date: '2026-09-15', time: '6:40 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-09-16', time: '6:40 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-09-17', time: '12:35 PM', raw: 'Milwaukee Brewers at Pittsburgh Pirates' },
+  { date: '2026-09-18', time: '6:40 PM', raw: 'Kansas City Royals at Pittsburgh Pirates' },
+  { date: '2026-09-19', time: '6:40 PM', raw: 'Kansas City Royals at Pittsburgh Pirates' },
+  { date: '2026-09-20', time: '1:35 PM', raw: 'Kansas City Royals at Pittsburgh Pirates' },
+  { date: '2026-09-22', time: '6:40 PM', raw: 'St. Louis Cardinals at Pittsburgh Pirates' },
+  { date: '2026-09-23', time: '6:40 PM', raw: 'St. Louis Cardinals at Pittsburgh Pirates' },
+  { date: '2026-09-24', time: '12:35 PM', raw: 'St. Louis Cardinals at Pittsburgh Pirates' },
+  { date: '2026-09-25', time: '6:40 PM', raw: 'Pittsburgh Pirates at Detroit Tigers' },
+  { date: '2026-09-26', time: '1:10 PM', raw: 'Pittsburgh Pirates at Detroit Tigers' },
+  { date: '2026-09-27', time: '3:10 PM', raw: 'Pittsburgh Pirates at Detroit Tigers' }
+];
+
+var guardiansRaw = [
+  { date: '2026-07-10', time: '7:10 PM', raw: 'Cleveland Guardians at Miami Marlins' },
+  { date: '2026-07-11', time: '4:10 PM', raw: 'Cleveland Guardians at Miami Marlins' },
+  { date: '2026-07-12', time: '1:40 PM', raw: 'Cleveland Guardians at Miami Marlins' },
+  { date: '2026-07-17', time: '7:10 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-18', time: '4:10 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-19', time: '1:40 PM', raw: 'Pittsburgh Pirates at Cleveland Guardians' },
+  { date: '2026-07-20', time: '6:40 PM', raw: 'Minnesota Twins at Cleveland Guardians' },
+  { date: '2026-07-21', time: '6:40 PM', raw: 'Minnesota Twins at Cleveland Guardians' },
+  { date: '2026-07-22', time: '6:40 PM', raw: 'Minnesota Twins at Cleveland Guardians' },
+  { date: '2026-07-23', time: '1:10 PM', raw: 'Minnesota Twins at Cleveland Guardians' },
+  { date: '2026-07-24', time: '7:10 PM', raw: 'Cleveland Guardians at Tampa Bay Rays' },
+  { date: '2026-07-25', time: '6:10 PM', raw: 'Cleveland Guardians at Tampa Bay Rays' },
+  { date: '2026-07-26', time: '12:15 PM', raw: 'Cleveland Guardians at Tampa Bay Rays' },
+  { date: '2026-07-27', time: '7:10 PM', raw: 'Cleveland Guardians at Cincinnati Reds' },
+  { date: '2026-07-28', time: '7:10 PM', raw: 'Cleveland Guardians at Cincinnati Reds' },
+  { date: '2026-07-29', time: '7:10 PM', raw: 'Cleveland Guardians at Cincinnati Reds' },
+  { date: '2026-07-31', time: '7:10 PM', raw: 'Arizona Diamondbacks at Cleveland Guardians' },
+  { date: '2026-08-01', time: '7:15 PM', raw: 'Arizona Diamondbacks at Cleveland Guardians' },
+  { date: '2026-08-02', time: '1:40 PM', raw: 'Arizona Diamondbacks at Cleveland Guardians' },
+  { date: '2026-08-04', time: '6:40 PM', raw: 'New York Mets at Cleveland Guardians' },
+  { date: '2026-08-05', time: '6:40 PM', raw: 'New York Mets at Cleveland Guardians' },
+  { date: '2026-08-06', time: '1:10 PM', raw: 'New York Mets at Cleveland Guardians' },
+  { date: '2026-08-07', time: '7:40 PM', raw: 'Cleveland Guardians at Chicago White Sox' },
+  { date: '2026-08-08', time: '7:10 PM', raw: 'Cleveland Guardians at Chicago White Sox' },
+  { date: '2026-08-09', time: '2:10 PM', raw: 'Cleveland Guardians at Chicago White Sox' },
+  { date: '2026-08-11', time: '6:40 PM', raw: 'Cleveland Guardians at Detroit Tigers' },
+  { date: '2026-08-12', time: '6:40 PM', raw: 'Cleveland Guardians at Detroit Tigers' },
+  { date: '2026-08-13', time: '1:10 PM', raw: 'Cleveland Guardians at Detroit Tigers' },
+  { date: '2026-08-14', time: '7:10 PM', raw: 'San Diego Padres at Cleveland Guardians' },
+  { date: '2026-08-15', time: '7:10 PM', raw: 'San Diego Padres at Cleveland Guardians' },
+  { date: '2026-08-16', time: '1:40 PM', raw: 'San Diego Padres at Cleveland Guardians' },
+  { date: '2026-08-18', time: '6:40 PM', raw: 'San Francisco Giants at Cleveland Guardians' },
+  { date: '2026-08-19', time: '6:40 PM', raw: 'San Francisco Giants at Cleveland Guardians' },
+  { date: '2026-08-20', time: '1:10 PM', raw: 'San Francisco Giants at Cleveland Guardians' },
+  { date: '2026-08-21', time: '8:40 PM', raw: 'Cleveland Guardians at Colorado Rockies' },
+  { date: '2026-08-22', time: '8:10 PM', raw: 'Cleveland Guardians at Colorado Rockies' },
+  { date: '2026-08-23', time: '3:10 PM', raw: 'Cleveland Guardians at Colorado Rockies' },
+  { date: '2026-08-24', time: '9:38 PM', raw: 'Cleveland Guardians at Los Angeles Angels' },
+  { date: '2026-08-25', time: '9:38 PM', raw: 'Cleveland Guardians at Los Angeles Angels' },
+  { date: '2026-08-26', time: '4:07 PM', raw: 'Cleveland Guardians at Los Angeles Angels' },
+  { date: '2026-08-28', time: '7:10 PM', raw: 'Kansas City Royals at Cleveland Guardians' },
+  { date: '2026-08-29', time: '4:10 PM', raw: 'Kansas City Royals at Cleveland Guardians' },
+  { date: '2026-08-30', time: '1:40 PM', raw: 'Kansas City Royals at Cleveland Guardians' },
+  { date: '2026-09-01', time: '6:40 PM', raw: 'Toronto Blue Jays at Cleveland Guardians' },
+  { date: '2026-09-02', time: '6:40 PM', raw: 'Toronto Blue Jays at Cleveland Guardians' },
+  { date: '2026-09-03', time: '1:10 PM', raw: 'Toronto Blue Jays at Cleveland Guardians' },
+  { date: '2026-09-04', time: '2:10 PM', raw: 'Detroit Tigers at Cleveland Guardians' },
+  { date: '2026-09-05', time: '6:10 PM', raw: 'Detroit Tigers at Cleveland Guardians' },
+  { date: '2026-09-06', time: '1:40 PM', raw: 'Detroit Tigers at Cleveland Guardians' },
+  { date: '2026-09-07', time: '1:35 PM', raw: 'Cleveland Guardians at Baltimore Orioles' },
+  { date: '2026-09-08', time: '6:35 PM', raw: 'Cleveland Guardians at Baltimore Orioles' },
+  { date: '2026-09-09', time: '6:35 PM', raw: 'Cleveland Guardians at Baltimore Orioles' },
+  { date: '2026-09-11', time: '8:10 PM', raw: 'Cleveland Guardians at Minnesota Twins' },
+  { date: '2026-09-12', time: '4:10 PM', raw: 'Cleveland Guardians at Minnesota Twins' },
+  { date: '2026-09-13', time: '2:10 PM', raw: 'Cleveland Guardians at Minnesota Twins' },
+  { date: '2026-09-14', time: '6:40 PM', raw: 'Chicago White Sox at Cleveland Guardians' },
+  { date: '2026-09-15', time: '6:40 PM', raw: 'Chicago White Sox at Cleveland Guardians' },
+  { date: '2026-09-16', time: '1:10 PM', raw: 'Chicago White Sox at Cleveland Guardians' },
+  { date: '2026-09-18', time: '7:10 PM', raw: 'Athletics at Cleveland Guardians' },
+  { date: '2026-09-19', time: '6:10 PM', raw: 'Athletics at Cleveland Guardians' },
+  { date: '2026-09-20', time: '1:40 PM', raw: 'Athletics at Cleveland Guardians' },
+  { date: '2026-09-22', time: '6:45 PM', raw: 'Cleveland Guardians at Boston Red Sox' },
+  { date: '2026-09-23', time: '7:10 PM', raw: 'Cleveland Guardians at Boston Red Sox' },
+  { date: '2026-09-24', time: '6:45 PM', raw: 'Cleveland Guardians at Boston Red Sox' },
+  { date: '2026-09-25', time: '7:40 PM', raw: 'Cleveland Guardians at Kansas City Royals' },
+  { date: '2026-09-26', time: '7:10 PM', raw: 'Cleveland Guardians at Kansas City Royals' },
+  { date: '2026-09-27', time: '3:10 PM', raw: 'Cleveland Guardians at Kansas City Royals' }
+];
+
+var steelersGames = [
+  { date: '2026-08-21', time: '7:00 PM', team: 'Steelers', opponent: 'New York Jets', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-08-27', time: '7:00 PM', team: 'Steelers', opponent: 'Buffalo Bills', homeAway: 'Away', venue: 'New Highmark Stadium', city: 'Buffalo, NY', sport: 'Football' },
+  { date: '2026-09-13', time: '1:00 PM', team: 'Steelers', opponent: 'Atlanta Falcons', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-09-20', time: '1:00 PM', team: 'Steelers', opponent: 'New England Patriots', homeAway: 'Away', venue: 'Gillette Stadium', city: 'Foxborough, MA', sport: 'Football' },
+  { date: '2026-09-27', time: '1:00 PM', team: 'Steelers', opponent: 'Cincinnati Bengals', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-01', time: '8:15 PM', team: 'Steelers', opponent: 'Cleveland Browns', homeAway: 'Away', venue: 'Huntington Bank Field', city: 'Cleveland, OH', sport: 'Football' },
+  { date: '2026-10-11', time: '1:00 PM', team: 'Steelers', opponent: 'Indianapolis Colts', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-18', time: '1:00 PM', team: 'Steelers', opponent: 'Tampa Bay Buccaneers', homeAway: 'Away', venue: 'Raymond James Stadium', city: 'Tampa, FL', sport: 'Football' },
+  { date: '2026-10-25', time: '9:30 AM', team: 'Steelers', opponent: 'New Orleans Saints', homeAway: 'Away', venue: 'Stade de France', city: 'Paris, France', sport: 'Football' },
+  { date: '2026-11-01', time: '1:00 PM', team: 'Steelers', opponent: 'Cleveland Browns', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-11-15', time: '8:20 PM', team: 'Steelers', opponent: 'Cincinnati Bengals', homeAway: 'Away', venue: 'Paycor Stadium', city: 'Cincinnati, OH', sport: 'Football' },
+  { date: '2026-11-22', time: '4:25 PM', team: 'Steelers', opponent: 'Philadelphia Eagles', homeAway: 'Away', venue: 'Lincoln Financial Field', city: 'Philadelphia, PA', sport: 'Football' },
+  { date: '2026-11-27', time: '3:00 PM', team: 'Steelers', opponent: 'Denver Broncos', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-12-06', time: '8:20 PM', team: 'Steelers', opponent: 'Houston Texans', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-12-14', time: '8:15 PM', team: 'Steelers', opponent: 'Jacksonville Jaguars', homeAway: 'Away', venue: 'EverBank Stadium', city: 'Jacksonville, FL', sport: 'Football' },
+  { date: '2026-12-20', time: '1:00 PM', team: 'Steelers', opponent: 'Baltimore Ravens', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-12-27', time: 'TBD', team: 'Steelers', opponent: 'Carolina Panthers', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2027-01-03', time: '1:00 PM', team: 'Steelers', opponent: 'Tennessee Titans', homeAway: 'Away', venue: 'Nissan Stadium', city: 'Nashville, TN', sport: 'Football' },
+  { date: '2027-01-10', time: 'TBD', team: 'Steelers', opponent: 'Baltimore Ravens', homeAway: 'Away', venue: 'M&T Bank Stadium', city: 'Baltimore, MD', sport: 'Football' }
+];
+
+var penguinsGames = [
+  { date: '2026-09-30', time: '7:30 PM', team: 'Penguins', opponent: 'Philadelphia Flyers', homeAway: 'Away', venue: 'Xfinity Mobile Arena', city: 'Philadelphia, PA', sport: 'Hockey' },
+  { date: '2026-10-03', time: '7:00 PM', team: 'Penguins', opponent: 'Montreal Canadiens', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-05', time: '7:30 PM', team: 'Penguins', opponent: 'Winnipeg Jets', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-07', time: '7:30 PM', team: 'Penguins', opponent: 'Washington Capitals', homeAway: 'Away', venue: 'Capital One Arena', city: 'Washington, DC', sport: 'Hockey' },
+  { date: '2026-10-09', time: '7:00 PM', team: 'Penguins', opponent: 'Columbus Blue Jackets', homeAway: 'Away', venue: 'Nationwide Arena', city: 'Columbus, OH', sport: 'Hockey' },
+  { date: '2026-10-10', time: '7:00 PM', team: 'Penguins', opponent: 'Dallas Stars', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-13', time: '8:00 PM', team: 'Penguins', opponent: 'Chicago Blackhawks', homeAway: 'Away', venue: 'United Center', city: 'Chicago, IL', sport: 'Hockey' },
+  { date: '2026-10-16', time: '9:00 PM', team: 'Penguins', opponent: 'Colorado Avalanche', homeAway: 'Away', venue: 'Ball Arena', city: 'Denver, CO', sport: 'Hockey' },
+  { date: '2026-10-17', time: '10:00 PM', team: 'Penguins', opponent: 'Vegas Golden Knights', homeAway: 'Away', venue: 'T-Mobile Arena', city: 'Las Vegas, NV', sport: 'Hockey' },
+  { date: '2026-10-19', time: '9:00 PM', team: 'Penguins', opponent: 'Utah Mammoth', homeAway: 'Away', venue: 'Delta Center', city: 'Salt Lake City, UT', sport: 'Hockey' },
+  { date: '2026-10-22', time: '7:00 PM', team: 'Penguins', opponent: 'Florida Panthers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-24', time: '7:00 PM', team: 'Penguins', opponent: 'Nashville Predators', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-29', time: '7:00 PM', team: 'Penguins', opponent: 'Utah Mammoth', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-10-31', time: '7:00 PM', team: 'Penguins', opponent: 'Montreal Canadiens', homeAway: 'Away', venue: 'Bell Centre', city: 'Montreal, QC', sport: 'Hockey' },
+  { date: '2026-11-03', time: '7:00 PM', team: 'Penguins', opponent: 'Vegas Golden Knights', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-05', time: '7:00 PM', team: 'Penguins', opponent: 'Boston Bruins', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-07', time: '9:00 PM', team: 'Penguins', opponent: 'Los Angeles Kings', homeAway: 'Away', venue: 'Crypto.com Arena', city: 'Los Angeles, CA', sport: 'Hockey' },
+  { date: '2026-11-08', time: '8:00 PM', team: 'Penguins', opponent: 'Anaheim Ducks', homeAway: 'Away', venue: 'Honda Center', city: 'Anaheim, CA', sport: 'Hockey' },
+  { date: '2026-11-11', time: '10:00 PM', team: 'Penguins', opponent: 'San Jose Sharks', homeAway: 'Away', venue: 'SAP Center at San Jose', city: 'San Jose, CA', sport: 'Hockey' },
+  { date: '2026-11-14', time: '7:00 PM', team: 'Penguins', opponent: 'Ottawa Senators', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-19', time: '7:00 PM', team: 'Penguins', opponent: 'St. Louis Blues', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-21', time: '6:00 PM', team: 'Penguins', opponent: 'Nashville Predators', homeAway: 'Away', venue: 'Bridgestone Arena', city: 'Nashville, TN', sport: 'Hockey' },
+  { date: '2026-11-22', time: '7:00 PM', team: 'Penguins', opponent: 'Dallas Stars', homeAway: 'Away', venue: 'American Airlines Center', city: 'Dallas, TX', sport: 'Hockey' },
+  { date: '2026-11-25', time: '7:00 PM', team: 'Penguins', opponent: 'Calgary Flames', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-27', time: '8:00 PM', team: 'Penguins', opponent: 'Buffalo Sabres', homeAway: 'Away', venue: 'KeyBank Center', city: 'Buffalo, NY', sport: 'Hockey' },
+  { date: '2026-11-28', time: '7:00 PM', team: 'Penguins', opponent: 'Toronto Maple Leafs', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-11-30', time: '7:00 PM', team: 'Penguins', opponent: 'Columbus Blue Jackets', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-02', time: '8:00 PM', team: 'Penguins', opponent: 'St. Louis Blues', homeAway: 'Away', venue: 'Enterprise Center', city: 'St. Louis, MO', sport: 'Hockey' },
+  { date: '2026-12-05', time: '3:00 PM', team: 'Penguins', opponent: 'New Jersey Devils', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-06', time: '3:00 PM', team: 'Penguins', opponent: 'San Jose Sharks', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-08', time: '7:00 PM', team: 'Penguins', opponent: 'Chicago Blackhawks', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-10', time: '7:00 PM', team: 'Penguins', opponent: 'Florida Panthers', homeAway: 'Away', venue: 'Amerant Bank Arena', city: 'Sunrise, FL', sport: 'Hockey' },
+  { date: '2026-12-12', time: '3:30 PM', team: 'Penguins', opponent: 'Tampa Bay Lightning', homeAway: 'Away', venue: 'Benchmark International Arena', city: 'Tampa, FL', sport: 'Hockey' },
+  { date: '2026-12-15', time: '7:00 PM', team: 'Penguins', opponent: 'Tampa Bay Lightning', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-17', time: '7:00 PM', team: 'Penguins', opponent: 'Los Angeles Kings', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-18', time: '7:00 PM', team: 'Penguins', opponent: 'Seattle Kraken', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-22', time: '7:00 PM', team: 'Penguins', opponent: 'Buffalo Sabres', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-26', time: '7:00 PM', team: 'Penguins', opponent: 'Carolina Hurricanes', homeAway: 'Away', venue: 'Lenovo Center', city: 'Raleigh, NC', sport: 'Hockey' },
+  { date: '2026-12-29', time: '7:00 PM', team: 'Penguins', opponent: 'Carolina Hurricanes', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2026-12-31', time: '2:00 PM', team: 'Penguins', opponent: 'Ottawa Senators', homeAway: 'Away', venue: 'Canadian Tire Centre', city: 'Ottawa, ON', sport: 'Hockey' },
+  { date: '2027-01-01', time: '6:00 PM', team: 'Penguins', opponent: 'Minnesota Wild', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-03', time: '3:00 PM', team: 'Penguins', opponent: 'Edmonton Oilers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-07', time: '7:00 PM', team: 'Penguins', opponent: 'Carolina Hurricanes', homeAway: 'Away', venue: 'Lenovo Center', city: 'Raleigh, NC', sport: 'Hockey' },
+  { date: '2027-01-09', time: '7:00 PM', team: 'Penguins', opponent: 'Montreal Canadiens', homeAway: 'Away', venue: 'Bell Centre', city: 'Montreal, QC', sport: 'Hockey' },
+  { date: '2027-01-12', time: '7:00 PM', team: 'Penguins', opponent: 'Colorado Avalanche', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-13', time: '7:30 PM', team: 'Penguins', opponent: 'New York Islanders', homeAway: 'Away', venue: 'UBS Arena', city: 'Elmont, NY', sport: 'Hockey' },
+  { date: '2027-01-16', time: '7:00 PM', team: 'Penguins', opponent: 'Toronto Maple Leafs', homeAway: 'Away', venue: 'Scotiabank Arena', city: 'Toronto, ON', sport: 'Hockey' },
+  { date: '2027-01-18', time: '4:00 PM', team: 'Penguins', opponent: 'Washington Capitals', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-21', time: '7:00 PM', team: 'Penguins', opponent: 'Anaheim Ducks', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-23', time: '7:00 PM', team: 'Penguins', opponent: 'Vancouver Canucks', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-25', time: '7:00 PM', team: 'Penguins', opponent: 'Detroit Red Wings', homeAway: 'Away', venue: 'Little Caesars Arena', city: 'Detroit, MI', sport: 'Hockey' },
+  { date: '2027-01-26', time: '7:00 PM', team: 'Penguins', opponent: 'New York Islanders', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-29', time: '7:00 PM', team: 'Penguins', opponent: 'New York Rangers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-01-31', time: '12:00 PM', team: 'Penguins', opponent: 'Philadelphia Flyers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-02-02', time: '7:00 PM', team: 'Penguins', opponent: 'Tampa Bay Lightning', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-02-13', time: '7:00 PM', team: 'Penguins', opponent: 'Edmonton Oilers', homeAway: 'Away', venue: 'Rogers Place', city: 'Edmonton, AB', sport: 'Hockey' },
+  { date: '2027-02-15', time: '4:00 PM', team: 'Penguins', opponent: 'Seattle Kraken', homeAway: 'Away', venue: 'Climate Pledge Arena', city: 'Seattle, WA', sport: 'Hockey' },
+  { date: '2027-02-16', time: '9:00 PM', team: 'Penguins', opponent: 'Vancouver Canucks', homeAway: 'Away', venue: 'Rogers Arena', city: 'Vancouver, BC', sport: 'Hockey' },
+  { date: '2027-02-19', time: '8:00 PM', team: 'Penguins', opponent: 'Calgary Flames', homeAway: 'Away', venue: 'Scotiabank Saddledome', city: 'Calgary, AB', sport: 'Hockey' },
+  { date: '2027-02-21', time: '6:00 PM', team: 'Penguins', opponent: 'Winnipeg Jets', homeAway: 'Away', venue: 'Canada Life Centre', city: 'Winnipeg, MB', sport: 'Hockey' },
+  { date: '2027-02-23', time: '8:00 PM', team: 'Penguins', opponent: 'Minnesota Wild', homeAway: 'Away', venue: 'Grand Casino Arena', city: 'St. Paul, MN', sport: 'Hockey' },
+  { date: '2027-02-25', time: '7:00 PM', team: 'Penguins', opponent: 'Toronto Maple Leafs', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-02-28', time: '1:00 PM', team: 'Penguins', opponent: 'New York Rangers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-02', time: '7:00 PM', team: 'Penguins', opponent: 'Buffalo Sabres', homeAway: 'Away', venue: 'KeyBank Center', city: 'Buffalo, NY', sport: 'Hockey' },
+  { date: '2027-03-04', time: '7:00 PM', team: 'Penguins', opponent: 'Florida Panthers', homeAway: 'Away', venue: 'Amerant Bank Arena', city: 'Sunrise, FL', sport: 'Hockey' },
+  { date: '2027-03-06', time: '12:00 PM', team: 'Penguins', opponent: 'Boston Bruins', homeAway: 'Away', venue: 'TD Garden', city: 'Boston, MA', sport: 'Hockey' },
+  { date: '2027-03-07', time: '1:00 PM', team: 'Penguins', opponent: 'New York Islanders', homeAway: 'Away', venue: 'UBS Arena', city: 'Elmont, NY', sport: 'Hockey' },
+  { date: '2027-03-09', time: '7:00 PM', team: 'Penguins', opponent: 'Ottawa Senators', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-11', time: '7:00 PM', team: 'Penguins', opponent: 'Boston Bruins', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-13', time: '3:00 PM', team: 'Penguins', opponent: 'Washington Capitals', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-14', time: '2:00 PM', team: 'Penguins', opponent: 'Detroit Red Wings', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-16', time: '7:00 PM', team: 'Penguins', opponent: 'Columbus Blue Jackets', homeAway: 'Away', venue: 'Nationwide Arena', city: 'Columbus, OH', sport: 'Hockey' },
+  { date: '2027-03-18', time: '7:00 PM', team: 'Penguins', opponent: 'New Jersey Devils', homeAway: 'Away', venue: 'Prudential Center', city: 'Newark, NJ', sport: 'Hockey' },
+  { date: '2027-03-20', time: '8:00 PM', team: 'Penguins', opponent: 'New York Rangers', homeAway: 'Away', venue: 'Madison Square Garden', city: 'New York, NY', sport: 'Hockey' },
+  { date: '2027-03-22', time: '7:00 PM', team: 'Penguins', opponent: 'Columbus Blue Jackets', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-25', time: '7:00 PM', team: 'Penguins', opponent: 'New Jersey Devils', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-27', time: '7:00 PM', team: 'Penguins', opponent: 'Carolina Hurricanes', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-03-30', time: '7:00 PM', team: 'Penguins', opponent: 'Philadelphia Flyers', homeAway: 'Away', venue: 'Xfinity Mobile Arena', city: 'Philadelphia, PA', sport: 'Hockey' },
+  { date: '2027-04-01', time: '7:00 PM', team: 'Penguins', opponent: 'New York Islanders', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-04-03', time: '8:00 PM', team: 'Penguins', opponent: 'Philadelphia Flyers', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Hockey' },
+  { date: '2027-04-04', time: '7:00 PM', team: 'Penguins', opponent: 'Washington Capitals', homeAway: 'Away', venue: 'Capital One Arena', city: 'Washington, DC', sport: 'Hockey' },
+  { date: '2027-04-06', time: '7:30 PM', team: 'Penguins', opponent: 'New York Rangers', homeAway: 'Away', venue: 'Madison Square Garden', city: 'New York, NY', sport: 'Hockey' },
+  { date: '2027-04-09', time: '7:00 PM', team: 'Penguins', opponent: 'Detroit Red Wings', homeAway: 'Away', venue: 'Little Caesars Arena', city: 'Detroit, MI', sport: 'Hockey' },
+  { date: '2027-04-10', time: '6:00 PM', team: 'Penguins', opponent: 'New Jersey Devils', homeAway: 'Away', venue: 'Prudential Center', city: 'Newark, NJ', sport: 'Hockey' }
+];
+
+var pittFootballGames = [
+  { date: '2026-09-05', time: '12:30 PM', team: 'Pitt Football', opponent: 'Miami (OH)', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-09-12', time: '3:30 PM', team: 'Pitt Football', opponent: 'UCF', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-09-17', time: '7:30 PM', team: 'Pitt Football', opponent: 'Syracuse', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-09-26', time: '12:00 PM', team: 'Pitt Football', opponent: 'Bucknell', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-02', time: '7:00 PM', team: 'Pitt Football', opponent: 'Virginia Tech', homeAway: 'Away', venue: 'Lane Stadium', city: 'Blacksburg, VA', sport: 'Football' },
+  { date: '2026-10-10', time: 'TBD', team: 'Pitt Football', opponent: 'North Carolina', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-17', time: 'TBD', team: 'Pitt Football', opponent: 'Boston College', homeAway: 'Away', venue: 'Alumni Stadium', city: 'Chestnut Hill, MA', sport: 'Football' },
+  { date: '2026-10-24', time: 'TBD', team: 'Pitt Football', opponent: 'Miami (FL)', homeAway: 'Away', venue: 'Hard Rock Stadium', city: 'Miami Gardens, FL', sport: 'Football' },
+  { date: '2026-10-31', time: 'TBD', team: 'Pitt Football', opponent: 'Georgia Tech', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-11-13', time: '7:00 PM', team: 'Pitt Football', opponent: 'Florida State', homeAway: 'Home', venue: 'Acrisure Stadium', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-11-21', time: 'TBD', team: 'Pitt Football', opponent: 'Louisville', homeAway: 'Away', venue: 'L&N Federal Credit Union Stadium', city: 'Louisville, KY', sport: 'Football' },
+  { date: '2026-11-28', time: 'TBD', team: 'Pitt Football', opponent: 'California', homeAway: 'Away', venue: 'California Memorial Stadium', city: 'Berkeley, CA', sport: 'Football' }
+];
+
+var ohioStateGames = [
+  { date: '2026-09-05', time: '12:30 PM', team: 'Ohio State', opponent: 'Ball State', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-09-12', time: '7:30 PM', team: 'Ohio State', opponent: 'Texas', homeAway: 'Away', venue: 'DKR-Texas Memorial Stadium', city: 'Austin, TX', sport: 'Football' },
+  { date: '2026-09-19', time: '12:00 PM', team: 'Ohio State', opponent: 'Kent State', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-09-26', time: 'TBD', team: 'Ohio State', opponent: 'Illinois', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-10-03', time: 'TBD', team: 'Ohio State', opponent: 'Iowa', homeAway: 'Away', venue: 'Kinnick Stadium', city: 'Iowa City, IA', sport: 'Football' },
+  { date: '2026-10-10', time: 'TBD', team: 'Ohio State', opponent: 'Maryland', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-10-17', time: 'TBD', team: 'Ohio State', opponent: 'Indiana', homeAway: 'Away', venue: 'Memorial Stadium', city: 'Bloomington, IN', sport: 'Football' },
+  { date: '2026-10-31', time: 'TBD', team: 'Ohio State', opponent: 'USC', homeAway: 'Away', venue: 'LA Memorial Coliseum', city: 'Los Angeles, CA', sport: 'Football' },
+  { date: '2026-11-07', time: 'TBD', team: 'Ohio State', opponent: 'Oregon', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-11-14', time: 'TBD', team: 'Ohio State', opponent: 'Northwestern', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' },
+  { date: '2026-11-21', time: 'TBD', team: 'Ohio State', opponent: 'Nebraska', homeAway: 'Away', venue: 'Memorial Stadium', city: 'Lincoln, NE', sport: 'Football' },
+  { date: '2026-11-28', time: '12:00 PM', team: 'Ohio State', opponent: 'Michigan', homeAway: 'Home', venue: 'Ohio Stadium', city: 'Columbus, OH', sport: 'Football' }
+];
+
+var duquesneFootballGames = [
+  { date: '2026-09-05', time: 'TBD', team: 'Duquesne Football', opponent: 'Air Force', homeAway: 'Away', venue: 'Falcon Stadium', city: 'Colorado Springs, CO', sport: 'Football' },
+  { date: '2026-09-12', time: 'TBD', team: 'Duquesne Football', opponent: 'Youngstown State', homeAway: 'Away', venue: 'Stambaugh Stadium', city: 'Youngstown, OH', sport: 'Football' },
+  { date: '2026-09-19', time: 'TBD', team: 'Duquesne Football', opponent: 'Washington State', homeAway: 'Away', venue: 'Gesa Field at Martin Stadium', city: 'Pullman, WA', sport: 'Football' },
+  { date: '2026-09-26', time: 'TBD', team: 'Duquesne Football', opponent: 'Rio Grande', homeAway: 'Home', venue: 'Rooney Field', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-10', time: 'TBD', team: 'Duquesne Football', opponent: 'LIU', homeAway: 'Home', venue: 'Rooney Field', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-17', time: 'TBD', team: 'Duquesne Football', opponent: 'Stonehill', homeAway: 'Away', venue: 'W.B. Mason Stadium', city: 'Easton, MA', sport: 'Football' },
+  { date: '2026-10-24', time: 'TBD', team: 'Duquesne Football', opponent: 'Wagner', homeAway: 'Home', venue: 'Rooney Field', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-10-31', time: 'TBD', team: 'Duquesne Football', opponent: 'New Haven', homeAway: 'Away', venue: 'Charles A. Dana Athletic Complex', city: 'West Haven, CT', sport: 'Football' },
+  { date: '2026-11-07', time: 'TBD', team: 'Duquesne Football', opponent: 'Robert Morris', homeAway: 'Home', venue: 'Rooney Field', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-11-14', time: 'TBD', team: 'Duquesne Football', opponent: 'Mercyhurst', homeAway: 'Home', venue: 'Rooney Field', city: 'Pittsburgh, PA', sport: 'Football' },
+  { date: '2026-11-21', time: 'TBD', team: 'Duquesne Football', opponent: 'Central Connecticut', homeAway: 'Away', venue: 'Arute Field', city: 'New Britain, CT', sport: 'Football' }
+];
+
+var pittBasketballGames = [
+  { date: '2026-11-02', time: 'TBD', team: 'Pitt Basketball', opponent: 'Rider', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-05', time: 'TBD', team: 'Pitt Basketball', opponent: 'Buffalo', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-08', time: 'TBD', team: 'Pitt Basketball', opponent: 'Penn State', homeAway: 'Neutral', venue: 'The Palestra', city: 'Philadelphia, PA', sport: 'Basketball' },
+  { date: '2026-11-11', time: 'TBD', team: 'Pitt Basketball', opponent: 'Butler', homeAway: 'Away', venue: 'Hinkle Fieldhouse', city: 'Indianapolis, IN', sport: 'Basketball' },
+  { date: '2026-12-05', time: 'TBD', team: 'Pitt Basketball', opponent: 'Tarleton State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-09', time: 'TBD', team: 'Pitt Basketball', opponent: 'West Virginia', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-15', time: 'TBD', team: 'Pitt Basketball', opponent: 'Drexel', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-18', time: 'TBD', team: 'Pitt Basketball', opponent: 'Georgia State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-21', time: 'TBD', team: 'Pitt Basketball', opponent: 'Cleveland State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' }
+];
+
+var aewGames = [
+  { date: '2026-08-19', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Baltimore', homeAway: 'Event', venue: 'Chesapeake Employers Insurance Arena', city: 'Baltimore, MD', sport: 'Wrestling' },
+  { date: '2026-08-21', time: '7:00 PM', team: 'AEW', opponent: 'ROH: Death Before Dishonor', homeAway: 'Event', venue: '2300 Arena', city: 'Philadelphia, PA', sport: 'Wrestling' },
+  { date: '2026-08-22', time: '7:00 PM', team: 'AEW', opponent: 'Collision: Reading', homeAway: 'Event', venue: 'Santander Arena', city: 'Reading, PA', sport: 'Wrestling' },
+  { date: '2026-08-26', time: '5:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Glasgow', homeAway: 'Event', venue: 'OVO Hydro', city: 'Glasgow, UK', sport: 'Wrestling' },
+  { date: '2026-08-26', time: '5:00 PM', team: 'AEW', opponent: 'Dynamite Match Day Watch Party', homeAway: 'Event', venue: 'Fulham Pier', city: 'London, England', sport: 'Wrestling' },
+  { date: '2026-08-28', time: 'Multiple Sessions', team: 'AEW', opponent: 'All In: Welcome To Wembley (Fan Experience)', homeAway: 'Event', venue: 'Great Hall at Wembley Stadium', city: 'London, England', sport: 'Wrestling' },
+  { date: '2026-08-30', time: '4:30 PM', team: 'AEW', opponent: 'All In: London', homeAway: 'Event', venue: 'Wembley Stadium', city: 'London, England', sport: 'Wrestling' },
+  { date: '2026-09-02', time: '6:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Allen', homeAway: 'Event', venue: 'Credit Union of Texas Event Center', city: 'Allen, TX', sport: 'Wrestling' },
+  { date: '2026-09-09', time: '7:30 PM', team: 'AEW', opponent: 'Rebel Heart Dynamite', homeAway: 'Event', venue: 'Akins Ford Arena', city: 'Athens, GA', sport: 'Wrestling' },
+  { date: '2026-09-12', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Springfield', homeAway: 'Event', venue: 'MassMutual Center', city: 'Springfield, MA', sport: 'Wrestling' },
+  { date: '2026-09-16', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Norfolk', homeAway: 'Event', venue: 'Chartway Arena', city: 'Norfolk, VA', sport: 'Wrestling' },
+  { date: '2026-09-19', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Charleston', homeAway: 'Event', venue: 'Charleston Coliseum', city: 'Charleston, WV', sport: 'Wrestling' },
+  { date: '2026-09-23', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Indianapolis', homeAway: 'Event', venue: 'Fishers Event Center', city: 'Indianapolis, IN', sport: 'Wrestling' },
+  { date: '2026-09-26', time: '6:00 PM', team: 'AEW', opponent: 'All Out', homeAway: 'Event', venue: 'Now Arena', city: 'Chicago, IL', sport: 'Wrestling' },
+  { date: '2026-09-30', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Pittsburgh', homeAway: 'Event', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Wrestling' },
+  { date: '2026-10-17', time: '7:00 PM', team: 'AEW', opponent: 'WrestleDream', homeAway: 'Event', venue: 'Addition Financial Arena', city: 'Orlando, FL', sport: 'Wrestling' },
+  { date: '2026-11-14', time: '4:00 PM', team: 'AEW', opponent: 'Full Gear', homeAway: 'Event', venue: 'Mortgage Matchup Center', city: 'Phoenix, AZ', sport: 'Wrestling' }
+];
+
+var builtInGames = []
+  .concat(buildMlbGames('Pittsburgh Pirates', piratesRaw))
+  .concat(buildMlbGames('Cleveland Guardians', guardiansRaw))
+  .concat(steelersGames)
+  .concat(penguinsGames)
+  .concat(pittFootballGames)
+  .concat(ohioStateGames)
+  .concat(duquesneFootballGames)
+  .concat(pittBasketballGames)
+  .concat(aewGames);
+
+var uploadedGames = [];
+var scheduleData = builtInGames.slice();
+
+var deselectedTeams = new Set(['AEW']);
+var knownTeams = new Set(scheduleData.map(function(g) { return g.team; }));
+var currentView = 'list';
+var maxDaysBetween = 4;
+var maxMiles = 75;
+var selectedCalDate = null;
+
+var cityCoords = {
+  'Pittsburgh, PA': [40.4406, -79.9959], 'Cleveland, OH': [41.4993, -81.6944],
+  'Milwaukee, WI': [43.0389, -87.9065], 'Bronx, NY': [40.8296, -73.9262],
+  'Chicago, IL': [41.8781, -87.6298], 'Phoenix, AZ': [33.4484, -112.0740],
+  'Cincinnati, OH': [39.1031, -84.5120], 'Queens, NY': [40.7282, -73.7949],
+  'Miami, FL': [25.7617, -80.1918], 'Boston, MA': [42.3601, -71.0589],
+  'Detroit, MI': [42.3314, -83.0458], 'Los Angeles, CA': [34.0522, -118.2437],
+  'San Diego, CA': [32.7157, -117.1611], 'St. Louis, MO': [38.6270, -90.1994],
+  'San Francisco, CA': [37.7749, -122.4194], 'Anaheim, CA': [33.8366, -117.9143],
+  'Kansas City, MO': [39.0997, -94.5786], 'Minneapolis, MN': [44.9778, -93.2650],
+  'Tampa, FL': [27.9506, -82.4572], 'Baltimore, MD': [39.2904, -76.6122],
+  'Denver, CO': [39.7392, -104.9903], 'Toronto, ON': [43.6532, -79.3832],
+  'West Sacramento, CA': [38.5805, -121.5301], 'Washington, DC': [38.9072, -77.0369],
+  'Philadelphia, PA': [39.9526, -75.1652], 'Newark, NJ': [40.7357, -74.1724],
+  'Oakland, CA': [37.8044, -122.2712], 'Foxborough, MA': [42.0909, -71.2643],
+  'Paris, France': [48.8566, 2.3522], 'Jacksonville, FL': [30.3322, -81.6557],
+  'Nashville, TN': [36.1627, -86.7816], 'Buffalo, NY': [42.8864, -78.8784],
+  'Montreal, QC': [45.5019, -73.5674], 'Winnipeg, MB': [49.8951, -97.1384],
+  'Columbus, OH': [39.9612, -82.9988], 'Las Vegas, NV': [36.1699, -115.1398],
+  'Salt Lake City, UT': [40.7608, -111.8910], 'Ottawa, ON': [45.4215, -75.6972],
+  'Raleigh, NC': [35.7796, -78.6382], 'Elmont, NY': [40.6987, -73.6845],
+  'Vancouver, BC': [49.2827, -123.1207], 'Calgary, AB': [51.0447, -114.0719],
+  'St. Paul, MN': [44.9537, -93.0900], 'New York, NY': [40.7128, -74.0060],
+  'Edmonton, AB': [53.5461, -113.4938], 'Seattle, WA': [47.6062, -122.3321],
+  'Sunrise, FL': [26.1543, -80.2988], 'Blacksburg, VA': [37.2296, -80.4139],
+  'Chestnut Hill, MA': [42.3264, -71.1686], 'Miami Gardens, FL': [25.9420, -80.2456],
+  'Berkeley, CA': [37.8715, -122.2730], 'Austin, TX': [30.2672, -97.7431],
+  'Bloomington, IN': [39.1653, -86.5264], 'Lincoln, NE': [40.8136, -96.7026],
+  'Colorado Springs, CO': [38.8339, -104.8214], 'Youngstown, OH': [41.0998, -80.6495],
+  'Pullman, WA': [46.7298, -117.1817], 'Easton, MA': [42.0251, -71.1245],
+  'West Haven, CT': [41.2707, -72.9470], 'New Britain, CT': [41.6612, -72.7795],
+  'Indianapolis, IN': [39.7684, -86.1581], 'Louisville, KY': [38.2527, -85.7585],
+  'Reading, PA': [40.3356, -75.9269], 'Allen, TX': [33.1032, -96.6706],
+  'Athens, GA': [33.9519, -83.3576], 'Springfield, MA': [42.1015, -72.5898],
+  'Norfolk, VA': [36.8508, -76.2859], 'Charleston, WV': [38.3498, -81.6326],
+  'Orlando, FL': [28.5383, -81.3792], 'London, England': [51.5074, -0.1278],
+  'Glasgow, UK': [55.8642, -4.2518]
+};
+
+function distanceMiles(cityA, cityB) {
+  if (!cityA || !cityB) return Infinity;
+  if (cityA === cityB) return 0;
+  var a = cityCoords[cityA], b = cityCoords[cityB];
+  if (!a || !b) return Infinity;
+  return haversineMiles(a, b);
+}
+function haversineMiles(a, b) {
+  var R = 3958.8;
+  var dLat = (b[0] - a[0]) * Math.PI / 180;
+  var dLon = (b[1] - a[1]) * Math.PI / 180;
+  var lat1 = a[0] * Math.PI / 180, lat2 = b[0] * Math.PI / 180;
+  var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  return R * c;
+}
+function citiesAreNearby(a, b, miles) { return distanceMiles(a, b) <= miles; }
+
+// "Home" = ZIP 08060 (South Jersey / Philly metro area)
+var homeCoords = [39.9709, -74.6801];
+function isNearHome(city, miles) {
+  var c = cityCoords[city];
+  if (!c) return false;
+  return haversineMiles(homeCoords, c) <= miles;
+}
+
+function findCityMatch(query) {
+  var q = query.trim().toLowerCase();
+  if (!q) return null;
+  var keys = Object.keys(cityCoords);
+  var exact = keys.find(function(k) { return k.split(',')[0].trim().toLowerCase() === q; });
+  if (exact) return exact;
+  var starts = keys.find(function(k) { return k.split(',')[0].trim().toLowerCase().indexOf(q) === 0; });
+  if (starts) return starts;
+  var contains = keys.find(function(k) { return k.toLowerCase().indexOf(q) !== -1; });
+  if (contains) return contains;
+  return null;
+}
+
+function getTodayStr() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).length < 2 ? '0' + (d.getMonth() + 1) : String(d.getMonth() + 1);
+  var day = String(d.getDate()).length < 2 ? '0' + d.getDate() : String(d.getDate());
+  return y + '-' + m + '-' + day;
+}
+
+function parseCSV(text) {
+  var lines = text.split(/\r?\n/).filter(function(l) { return l.trim().length > 0; });
+  if (lines.length === 0) return [];
+  var headers = lines[0].split(',').map(function(h) { return h.trim(); });
+  return lines.slice(1).map(function(line) {
+    var values = line.split(',').map(function(v) { return v.trim(); });
+    var row = {};
+    headers.forEach(function(h, i) { row[h] = values[i] || ''; });
+    return row;
+  });
+}
+
+document.getElementById('csvInput').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    errorBox.textContent = 'Please upload a CSV file (Save As "CSV" from Excel, then upload).';
+    errorBox.style.display = 'block';
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      var rows = parseCSV(evt.target.result);
+      var formatted = rows.map(function(row) {
+        return {
+          date: row.Date || row.date, time: row.Time || row.time || 'TBD',
+          team: row.Team || row.team, opponent: row.Opponent || row.opponent,
+          homeAway: row['Home/Away'] || row.homeAway || row.HomeAway,
+          venue: row.Venue || row.venue, city: row.City || row.city, sport: row.Sport || row.sport
+        };
+      }).filter(function(g) { return g.date && g.team; });
+
+      formatted.forEach(function(g) {
+        if (!knownTeams.has(g.team)) {
+          knownTeams.add(g.team);
+          if (g.team !== 'Pitt Volleyball') deselectedTeams.add(g.team);
+        }
+      });
+
+      uploadedGames = uploadedGames.concat(formatted);
+      scheduleData = builtInGames.concat(uploadedGames);
+      render();
+    } catch (err) {
+      errorBox.textContent = 'Error reading file. Make sure columns are: Date, Time, Team, Opponent, Home/Away, Venue, City, Sport';
+      errorBox.style.display = 'block';
+    }
+  };
+  reader.readAsText(file);
+});
+
+function clearAll() {
+  uploadedGames = [];
+  scheduleData = builtInGames.slice();
+  deselectedTeams = new Set(['AEW']);
+  knownTeams = new Set(builtInGames.map(function(g) { return g.team; }));
+  document.getElementById('startDate').value = '';
+  document.getElementById('endDate').value = '';
+  document.getElementById('cityFilter').value = '';
+  document.getElementById('errorBox').style.display = 'none';
+  render();
+}
+
+function selectAllTeams() { deselectedTeams = new Set(); render(); }
+function deselectAllTeams() {
+  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; })));
+  deselectedTeams = new Set(teams);
+  render();
+}
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('listTabBtn').classList.toggle('active', view === 'list');
+  document.getElementById('calTabBtn').classList.toggle('active', view === 'calendar');
+  document.getElementById('tripsTabBtn').classList.toggle('active', view === 'trips');
+  document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+  document.getElementById('listFilters').style.display = (view === 'list' || view === 'calendar') ? 'block' : 'none';
+  document.getElementById('calendarView').style.display = view === 'calendar' ? 'block' : 'none';
+  document.getElementById('tripsView').style.display = view === 'trips' ? 'block' : 'none';
+  render();
+}
+
+function toggleTeam(team) {
+  if (deselectedTeams.has(team)) deselectedTeams.delete(team);
+  else deselectedTeams.add(team);
+  render();
+}
+
+function getFilteredGames() {
+  var start = document.getElementById('startDate').value;
+  var end = document.getElementById('endDate').value;
+  var cityFilterRaw = document.getElementById('cityFilter').value;
+  var todayStr = getTodayStr();
+  var games = scheduleData.slice();
+  games = games.filter(function(g) { return !g.date || g.date >= todayStr; });
+  games = games.filter(function(g) { return !deselectedTeams.has(g.team); });
+  if (start) games = games.filter(function(g) { return g.date >= start; });
+  if (end) games = games.filter(function(g) { return g.date <= end; });
+
+  var hintEl = document.getElementById('cityHint');
+  if (cityFilterRaw && cityFilterRaw.trim()) {
+    var matched = findCityMatch(cityFilterRaw);
+    if (matched) {
+      hintEl.textContent = 'Showing games within 100 mi of ' + matched;
+      games = games.filter(function(g) { return citiesAreNearby(g.city, matched, 100); });
+    } else {
+      hintEl.textContent = 'No known city matched — showing text matches only';
+      var q = cityFilterRaw.toLowerCase();
+      games = games.filter(function(g) { return g.city && g.city.toLowerCase().indexOf(q) !== -1; });
+    }
+  } else {
+    hintEl.textContent = '';
+  }
+
+  return games.sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return 'TBD';
+  var d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+function formatShort(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  return { dow: d.toLocaleDateString('en-US', { weekday: 'short' }), dom: d.getDate() };
+}
+function monthLabel(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function renderTeamButtons() {
+  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort();
+  var container = document.getElementById('teamButtons');
+  var activeTeams = teams.filter(function(t) { return !deselectedTeams.has(t); });
+  var inactiveTeams = teams.filter(function(t) { return deselectedTeams.has(t); });
+
+  function chipHtml(t) {
+    return '<button class="team-chip active-check" data-team="' + t.replace(/"/g, '&quot;') + '"></button>';
+  }
+
+  container.innerHTML = '';
+  function makeChip(t) {
+    var btn = document.createElement('button');
+    btn.className = 'team-chip' + (deselectedTeams.has(t) ? '' : ' active');
+    btn.textContent = t;
+    btn.onclick = function() { toggleTeam(t); };
+    return btn;
+  }
+  activeTeams.forEach(function(t) { container.appendChild(makeChip(t)); });
+  if (activeTeams.length > 0 && inactiveTeams.length > 0) {
+    var divider = document.createElement('div');
+    divider.className = 'chip-divider';
+    container.appendChild(divider);
+  }
+  inactiveTeams.forEach(function(t) { container.appendChild(makeChip(t)); });
+
+  var activeCount = teams.length - deselectedTeams.size;
+  document.getElementById('headerSubtitle').textContent = scheduleData.length + ' games • ' + activeCount + '/' + teams.length + ' teams shown';
+}
+
+function renderList() {
+  var games = getFilteredGames();
+  var container = document.getElementById('gameListContainer');
+  if (games.length === 0) {
+    container.innerHTML = '<div class="empty">No games found.<br>Try adjusting your filters.</div>';
+    return;
+  }
+  var html = '';
+  var currentMonth = '';
+  games.forEach(function(g) {
+    var m = g.date ? monthLabel(g.date) : 'Date TBD';
+    if (m !== currentMonth) { html += '<div class="month-header">' + m + '</div>'; currentMonth = m; }
+    var sd = g.date ? formatShort(g.date) : { dow: '', dom: '?' };
+    var pillClass = g.homeAway === 'Home' ? 'home' : (g.homeAway === 'Neutral' ? 'neutral' : 'away');
+    html += '<div class="game-card sport-' + g.sport + '">' +
+      '<div class="sport-bar"></div>' +
+      '<div class="game-date-block"><div class="dow">' + sd.dow + '</div><div class="dom">' + sd.dom + '</div></div>' +
+      '<div class="game-info">' +
+        '<div class="game-team">' + g.team + '</div>' +
+        '<div class="game-opp">' + (g.homeAway === 'Event' ? g.opponent : 'vs ' + g.opponent) + '</div>' +
+        '<div class="game-meta-line">' + (g.time && g.time !== 'TBD' ? '<span>🕐 ' + g.time + '</span>' : '') + '<span>📍 ' + g.venue + ', ' + g.city + '</span></div>' +
+        '<div style="margin-top:6px;"><span class="pill ' + pillClass + '">' + g.homeAway + '</span></div>' +
+      '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+var teamColorOverrides = {
+  'Ohio State': '#dc2626',
+  'Cleveland Guardians': '#7f1d1d',
+  'Pittsburgh Pirates': '#C19A49',
+  'Steelers': '#FFB612',
+  'Penguins': '#111111',
+  'Pitt Football': '#0047AB',
+  'Pitt Basketball': '#0047AB',
+  'AEW': '#7C3AED',
+  'WWE': '#7C3AED',
+  'Duquesne Football': '#0A1F44'
+};
+var teamLetterOverrides = {
+  'Ohio State': 'O',
+  'Cleveland Guardians': 'G',
+  'Pittsburgh Pirates': 'P',
+  'Steelers': 'S',
+  'Penguins': 'P',
+  'Pitt Football': 'P',
+  'Pitt Basketball': 'P',
+  'AEW': 'A',
+  'WWE': 'W',
+  'Duquesne Football': 'D'
+};
+function getTeamLetter(team) {
+  if (teamLetterOverrides[team]) return teamLetterOverrides[team];
+  return team.charAt(0).toUpperCase();
+}
+var teamColorPalette = ['#e11d48','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#4f46e5','#059669','#c026d3','#0284c7','#b45309','#9333ea'];
+var teamColorMap = {};
+function getTeamColor(team) {
+  if (teamColorOverrides[team]) return teamColorOverrides[team];
+  if (!teamColorMap[team]) {
+    var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).filter(function(t) { return !teamColorOverrides[t]; }).sort();
+    teams.forEach(function(t, i) { teamColorMap[t] = teamColorPalette[i % teamColorPalette.length]; });
+  }
+  return teamColorMap[team] || '#6b7280';
+}
+
+var calendarMonth = (function() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
+function shiftMonth(delta) { calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + delta, 1); renderCalendar(); }
+function pad2(n) { return n < 10 ? '0' + n : String(n); }
+
+function collapseIntoSeries(games) {
+  var byTeam = {};
+  games.forEach(function(g) { if (!byTeam[g.team]) byTeam[g.team] = []; byTeam[g.team].push(g); });
+  var series = [];
+  Object.keys(byTeam).forEach(function(team) {
+    var teamGames = byTeam[team].slice().sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+    var block = null;
+    teamGames.forEach(function(g) {
+      if (!g.date) return;
+      if (block && block.city === g.city) {
+        var gap = (new Date(g.date) - new Date(block.endDate)) / (1000 * 60 * 60 * 24);
+        if (gap <= 1) { block.endDate = g.date; block.opponents.add(g.opponent); block.games.push(g); return; }
+      }
+      if (block) series.push(block);
+      block = { team: g.team, city: g.city, venue: g.venue, sport: g.sport, startDate: g.date, endDate: g.date, opponents: new Set([g.opponent]), games: [g] };
+    });
+    if (block) series.push(block);
+  });
+  return series;
+}
+
+// Kept for the "X days later" display text on trip cards (not used for qualifying anymore).
+function daysBetweenSeries(s1, s2) {
+  var d1start = new Date(s1.startDate), d1end = new Date(s1.endDate);
+  var d2start = new Date(s2.startDate), d2end = new Date(s2.endDate);
+  if (d2start <= d1end && d1start <= d2end) return 0;
+  if (d2start > d1end) return (d2start - d1end) / (1000 * 60 * 60 * 24);
+  return (d1start - d2end) / (1000 * 60 * 60 * 24);
+}
+
+// Finds games near (but outside) the cluster's date window - within 2 days before/after -
+// that are also within the mile radius, so they can be noted without inflating the cluster.
+function findNearMisses(allSeries, s1, s2, maxMi) {
+  var minStart = new Date(Math.min(new Date(s1.startDate), new Date(s2.startDate)));
+  var maxEnd = new Date(Math.max(new Date(s1.endDate), new Date(s2.endDate)));
+  var extStart = new Date(minStart); extStart.setDate(extStart.getDate() - 2);
+  var extEnd = new Date(maxEnd); extEnd.setDate(extEnd.getDate() + 2);
+  var notes = [];
+  allSeries.forEach(function(s) {
+    if (s === s1 || s === s2) return;
+    if (s.team === s1.team || s.team === s2.team) return;
+    var sStart = new Date(s.startDate), sEnd = new Date(s.endDate);
+    var withinExtended = sEnd >= extStart && sStart <= extEnd;
+    var withinActual = sEnd >= minStart && sStart <= maxEnd;
+    if (withinExtended && !withinActual) {
+      if (citiesAreNearby(s.city, s1.city, maxMi) || citiesAreNearby(s.city, s2.city, maxMi)) {
+        notes.push(s);
+      }
+    }
+  });
+  return notes;
+}
+
+function buildTrips(seriesList, maxDays, maxMi) {
+  var sorted = seriesList.slice().sort(function(a, b) { return a.startDate.localeCompare(b.startDate); });
+  var trips = [];
+  for (var i = 0; i < sorted.length; i++) {
+    for (var j = i + 1; j < sorted.length; j++) {
+      var s1 = sorted[i], s2 = sorted[j];
+      if (s1.team === s2.team) continue;
+
+      var d1s = new Date(s1.startDate), d1e = new Date(s1.endDate);
+      var d2s = new Date(s2.startDate), d2e = new Date(s2.endDate);
+      var minStart = d1s < d2s ? d1s : d2s;
+      var maxEnd = d1e > d2e ? d1e : d2e;
+      var clusterSpanDays = Math.round((maxEnd - minStart) / (1000 * 60 * 60 * 24)) + 1;
+      if (clusterSpanDays > maxDays) continue;
+
+      if (citiesAreNearby(s1.city, s2.city, maxMi)) {
+        var pair = [s1, s2];
+        pair.notes = findNearMisses(sorted, s1, s2, maxMi);
+        trips.push(pair);
+      }
+    }
+  }
+  return trips;
+}
+
+function getHighlightedDateMap(games) {
+  var series = collapseIntoSeries(games);
+  var trips = buildTrips(series, maxDaysBetween, maxMiles);
+  var map = {};
+  trips.forEach(function(pair) {
+    var cur = new Date(pair[0].startDate + 'T00:00:00');
+    var end = new Date(pair[1].endDate + 'T00:00:00');
+    while (cur <= end) {
+      var ds = cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate());
+      if (!map[ds]) map[ds] = [];
+      map[ds].push(pair);
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  return map;
+}
+
+function tripCardHtml(pair) {
+  var s1 = pair[0], s2 = pair[1];
+  var cities = Array.from(new Set([s1.city, s2.city]));
+  var start = s1.startDate, end = s2.endDate;
+  var d1end = new Date(s1.endDate), d2start = new Date(s2.startDate);
+  var gapDays = Math.round((d2start - d1end) / (1000 * 60 * 60 * 24));
+  var miles = Math.round(distanceMiles(s1.city, s2.city));
+
+  function stopHtml(s) {
+    var opp = Array.from(s.opponents).join(', ');
+    var label = s.games[0].homeAway === 'Event' ? opp : 'vs ' + opp;
+    var dateRange = formatDate(s.startDate) + (s.endDate !== s.startDate ? ' - ' + formatDate(s.endDate) : '');
+    return '<div class="timeline-stop"><div class="timeline-dot"></div><div class="timeline-stop-content">' +
+      '<div class="timeline-team">' + s.team + '</div><div class="timeline-opp">' + label + '</div>' +
+      '<div class="timeline-meta">📅 ' + dateRange + ' • 📍 ' + s.venue + ', ' + s.city + '</div></div></div>';
+  }
+
+  var gapHtml = '<div class="timeline-gap">↓ ' + (gapDays <= 0 ? 'same window' : gapDays + ' day' + (gapDays !== 1 ? 's' : '') + ' later') + ' • ~' + miles + ' mi</div>';
+
+  var notesHtml = '';
+  if (pair.notes && pair.notes.length > 0) {
+    notesHtml = '<div class="trip-notes"><div class="trip-notes-label">Also nearby (outside day window)</div>' +
+      pair.notes.map(function(s) {
+        var opp = Array.from(s.opponents).join(', ');
+        var label = s.games[0].homeAway === 'Event' ? opp : 'vs ' + opp;
+        var dateRange = formatDate(s.startDate) + (s.endDate !== s.startDate ? ' - ' + formatDate(s.endDate) : '');
+        return '<div class="trip-note-item">• ' + s.team + ' ' + label + ' — ' + dateRange + ', ' + s.city + '</div>';
+      }).join('') +
+    '</div>';
+  }
+
+  return '<div class="trip-card"><div class="trip-card-header"><div>' +
+    '<div class="trip-title">' + cities.join(' → ') + '</div>' +
+    '<div class="trip-subtitle">' + formatDate(start) + ' – ' + formatDate(end) + '</div></div>' +
+    '<span class="trip-count-badge">2 stops</span></div>' +
+    '<div class="timeline"><div class="timeline-line"></div>' + stopHtml(s1) + gapHtml + stopHtml(s2) + '</div>' +
+    notesHtml +
+  '</div>';
+}
+
+function gameCardHtml(g) {
+  var pillClass = g.homeAway === 'Home' ? 'home' : (g.homeAway === 'Neutral' ? 'neutral' : 'away');
+  return '<div class="game-card sport-' + g.sport + '">' +
+    '<div class="sport-bar"></div>' +
+    '<div class="game-info">' +
+      '<div class="game-team">' + g.team + '</div>' +
+      '<div class="game-opp">' + (g.homeAway === 'Event' ? g.opponent : 'vs ' + g.opponent) + '</div>' +
+      '<div class="game-meta-line">' + (g.time && g.time !== 'TBD' ? '<span>🕐 ' + g.time + '</span>' : '') + '<span>📍 ' + g.venue + ', ' + g.city + '</span></div>' +
+      '<div style="margin-top:6px;"><span class="pill ' + pillClass + '">' + g.homeAway + '</span></div>' +
+    '</div></div>';
+}
+
+function selectCalDate(dateStr) { selectedCalDate = dateStr; renderCalendar(); }
+
+function renderCalDayPanel(games, highlightedMap, targetId) {
+  var panel = document.getElementById(targetId);
+  if (!selectedCalDate) { panel.innerHTML = ''; return; }
+
+  var out = '<div class="cal-day-panel-title">' + formatDate(selectedCalDate) + '</div>';
+  var dayTrips = highlightedMap[selectedCalDate] || [];
+
+  if (dayTrips.length > 0) {
+    out += '<div class="filter-row-label" style="margin-top:0;">🔥 Trip Opportunity</div>';
+    out += dayTrips.map(tripCardHtml).join('');
+    out += '<div class="filter-row-label">Games This Day</div>';
+  }
+
+  var dayGames = games.filter(function(g) { return g.date === selectedCalDate; });
+  if (dayGames.length === 0) {
+    out += '<div class="empty" style="padding:16px 0;">No games this day</div>';
+  } else {
+    out += dayGames.map(gameCardHtml).join('');
+  }
+
+  panel.innerHTML = '<div class="cal-day-panel">' + out + '</div>';
+}
+
+function openCalModal() { document.getElementById('calModalOverlay').classList.add('open'); renderCalendar(); }
+function closeCalModal() { document.getElementById('calModalOverlay').classList.remove('open'); }
+
+function buildCalendarDays() {
+  var y = calendarMonth.getFullYear(), m = calendarMonth.getMonth();
+  var firstDay = new Date(y, m, 1);
+  var startWeekday = firstDay.getDay();
+  var daysInMonth = new Date(y, m + 1, 0).getDate();
+  return { y: y, m: m, startWeekday: startWeekday, daysInMonth: daysInMonth };
+}
+
+function renderCalendar() {
+  var games = getFilteredGames();
+  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort();
+
+  var legendHtml = teams.map(function(t) {
+    return '<div class="cal-legend-item"><span class="cal-legend-dot" style="background:' + getTeamColor(t) + '"></span>' + t + '</div>';
+  }).join('');
+  document.getElementById('calLegend').innerHTML = legendHtml;
+  document.getElementById('calLegendModal').innerHTML = legendHtml;
+
+  var monthLabelText = calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('calMonthLabel').textContent = monthLabelText;
+  document.getElementById('calMonthLabelModal').textContent = monthLabelText;
+
+  var byDate = {};
+  games.forEach(function(g) { if (!g.date) return; if (!byDate[g.date]) byDate[g.date] = []; byDate[g.date].push(g); });
+
+  var highlightedMap = getHighlightedDateMap(games);
+  var todayStr = getTodayStr();
+  var cal = buildCalendarDays();
+
+  var dowHtml = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
+  var smallCells = '';
+  for (var i = 0; i < cal.startWeekday; i++) smallCells += '<div class="cal-cell empty"></div>';
+  for (var day = 1; day <= cal.daysInMonth; day++) {
+    var dateStr = cal.y + '-' + pad2(cal.m + 1) + '-' + pad2(day);
+    var dayGames = byDate[dateStr] || [];
+    var isHighlighted = !!highlightedMap[dateStr];
+    var isNearHomeDay = dayGames.some(function(g) { return isNearHome(g.city, maxMiles); });
+    var classes = 'cal-cell';
+    if (isHighlighted) classes += ' overlap';
+    if (isNearHomeDay) classes += ' near-home';
+    if (dateStr === todayStr) classes += ' today';
+    if (dateStr === selectedCalDate) classes += ' selected';
+    var dotsHtml = dayGames.slice(0, 6).map(function(g) {
+      return '<span class="cal-dot" style="background:' + getTeamColor(g.team) + '" title="' + g.team + '">' + getTeamLetter(g.team) + '</span>';
+    }).join('');
+    var moreHtml = dayGames.length > 6 ? '<span class="cal-more">+' + (dayGames.length - 6) + '</span>' : '';
+    var flagHtml = (isHighlighted ? '<span class="cal-overlap-flag">🔥</span>' : '') + (isNearHomeDay ? '<span class="cal-overlap-flag" style="right:16px;">🏠</span>' : '');
+    smallCells += '<div class="' + classes + '" onclick="selectCalDate(\'' + dateStr + '\')">' +
+      flagHtml + '<div class="cal-daynum">' + day + '</div>' + '<div class="cal-dot-row">' + dotsHtml + moreHtml + '</div>' + '</div>';
+  }
+  document.getElementById('calGrid').innerHTML = dowHtml + smallCells;
+
+  var dowHtmlLg = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d) { return '<div class="cal-dow-lg">' + d + '</div>'; }).join('');
+  var largeCells = '';
+  for (var j = 0; j < cal.startWeekday; j++) largeCells += '<div class="cal-cell-lg empty"></div>';
+  for (var day2 = 1; day2 <= cal.daysInMonth; day2++) {
+    var dateStr2 = cal.y + '-' + pad2(cal.m + 1) + '-' + pad2(day2);
+    var dayGames2 = byDate[dateStr2] || [];
+    var isHighlighted2 = !!highlightedMap[dateStr2];
+    var isNearHomeDay2 = dayGames2.some(function(g) { return isNearHome(g.city, maxMiles); });
+    var classes2 = 'cal-cell-lg';
+    if (isHighlighted2) classes2 += ' overlap';
+    if (isNearHomeDay2) classes2 += ' near-home';
+    if (dateStr2 === todayStr) classes2 += ' today';
+    if (dateStr2 === selectedCalDate) classes2 += ' selected';
+    var barsHtml = dayGames2.slice(0, 5).map(function(g) {
+      return '<div class="cal-bar" style="background:' + getTeamColor(g.team) + '" title="' + g.team + '">' + g.team + '</div>';
+    }).join('');
+    var moreHtml2 = dayGames2.length > 5 ? '<div class="cal-bar-more">+' + (dayGames2.length - 5) + ' more</div>' : '';
+    var flagHtml2 = (isHighlighted2 ? '<span class="cal-overlap-flag">🔥</span>' : '') + (isNearHomeDay2 ? '<span class="cal-overlap-flag" style="right:16px;">🏠</span>' : '');
+    largeCells += '<div class="' + classes2 + '" onclick="selectCalDate(\'' + dateStr2 + '\')">' +
+      flagHtml2 + '<div class="cal-daynum-lg">' + day2 + '</div>' + barsHtml + moreHtml2 + '</div>';
+  }
+  document.getElementById('calGridModal').innerHTML = dowHtmlLg + largeCells;
+
+  renderCalDayPanel(games, highlightedMap, 'calDayPanel');
+  renderCalDayPanel(games, highlightedMap, 'calDayPanelModal');
+}
+
+function renderTrips() {
+  var games = getFilteredGames();
+  var series = collapseIntoSeries(games);
+  var trips = buildTrips(series, maxDaysBetween, maxMiles);
+  var tripListEl = document.getElementById('tripList');
+
+  if (trips.length === 0) {
+    tripListEl.innerHTML = '<div class="trip-card"><div class="empty">No trip opportunities found.<br>Try increasing the day or distance limit.</div></div>';
+    return;
+  }
+
+  tripListEl.innerHTML = trips.map(tripCardHtml).join('');
+}
+
+function render() {
+  renderTeamButtons();
+  if (currentView === 'list') renderList();
+  else if (currentView === 'calendar') renderCalendar();
+  else renderTrips();
+}
+
+function setMaxDays(v) {
+  maxDaysBetween = v;
+  document.getElementById('maxDaysLabel').textContent = v;
+  document.getElementById('calDaysLabel').textContent = v;
+  document.getElementById('maxDaysSlider').value = v;
+  document.getElementById('calDaysSlider').value = v;
+  render();
+}
+function setMaxMiles(v) {
+  maxMiles = v;
+  document.getElementById('maxMilesLabel').textContent = v;
+  document.getElementById('calMilesLabel').textContent = v;
+  document.getElementById('maxMilesSlider').value = v;
+  document.getElementById('calMilesSlider').value = v;
+  render();
+}
+
+document.getElementById('startDate').addEventListener('change', render);
+document.getElementById('endDate').addEventListener('change', render);
+document.getElementById('cityFilter').addEventListener('input', render);
+document.getElementById('maxDaysSlider').addEventListener('input', function(e) { setMaxDays(Number(e.target.value)); });
+document.getElementById('calDaysSlider').addEventListener('input', function(e) { setMaxDays(Number(e.target.value)); });
+document.getElementById('maxMilesSlider').addEventListener('input', function(e) { setMaxMiles(Number(e.target.value)); });
+document.getElementById('calMilesSlider').addEventListener('input', function(e) { setMaxMiles(Number(e.target.value)); });
+
+render();
+</script>
+</body>
+</html>
