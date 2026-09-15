@@ -123,8 +123,9 @@
 
 <!--
   STILL MISSING FROM DATA (not shown in UI per user request, tracked here instead):
-  Pitt Volleyball, Pitt Baseball, Pitt Wrestling, Duquesne Volleyball, Duquesne Basketball, WWE.
-  When added via CSV: "Pitt Volleyball" should default to SELECTED; all others default DESELECTED.
+  Pitt Baseball, Pitt Wrestling, Duquesne Basketball, Duquesne Volleyball, WWE.
+  Pitt Volleyball and Pitt Basketball (full ACC schedule) are now included as of the last update.
+  When adding new teams via CSV: everything defaults DESELECTED except explicit exceptions coded in JS.
 -->
 
 <div class="app-header">
@@ -542,32 +543,147 @@ var pittBasketballGames = [
   { date: '2026-11-02', time: 'TBD', team: 'Pitt Basketball', opponent: 'Rider', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
   { date: '2026-11-05', time: 'TBD', team: 'Pitt Basketball', opponent: 'Buffalo', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
   { date: '2026-11-08', time: 'TBD', team: 'Pitt Basketball', opponent: 'Penn State', homeAway: 'Neutral', venue: 'The Palestra', city: 'Philadelphia, PA', sport: 'Basketball' },
-  { date: '2026-11-11', time: 'TBD', team: 'Pitt Basketball', opponent: 'Butler', homeAway: 'Away', venue: 'Hinkle Fieldhouse', city: 'Indianapolis, IN', sport: 'Basketball' },
+  { date: '2026-11-13', time: 'TBD', team: 'Pitt Basketball', opponent: 'Butler', homeAway: 'Away', venue: 'Hinkle Fieldhouse', city: 'Indianapolis, IN', sport: 'Basketball' },
+  { date: '2026-11-17', time: 'TBD', team: 'Pitt Basketball', opponent: 'Villanova', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-20', time: 'TBD', team: 'Pitt Basketball', opponent: 'Central Michigan', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-24', time: 'TBD', team: 'Pitt Basketball', opponent: 'Oklahoma', homeAway: 'Neutral', venue: 'Fort Myers Tip-Off', city: 'Fort Myers, FL', sport: 'Basketball' },
+  { date: '2026-11-26', time: 'TBD', team: 'Pitt Basketball', opponent: 'DePaul', homeAway: 'Neutral', venue: 'Fort Myers Tip-Off', city: 'Fort Myers, FL', sport: 'Basketball' },
+  { date: '2026-12-01', time: 'TBD', team: 'Pitt Basketball', opponent: 'Missouri', homeAway: 'Away', venue: 'Mizzou Arena', city: 'Columbia, MO', sport: 'Basketball' },
   { date: '2026-12-05', time: 'TBD', team: 'Pitt Basketball', opponent: 'Tarleton State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
-  { date: '2026-12-09', time: 'TBD', team: 'Pitt Basketball', opponent: 'West Virginia', homeAway: 'Home', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-09', time: 'TBD', team: 'Pitt Basketball', opponent: 'West Virginia', homeAway: 'Neutral', venue: 'PPG Paints Arena', city: 'Pittsburgh, PA', sport: 'Basketball' },
   { date: '2026-12-15', time: 'TBD', team: 'Pitt Basketball', opponent: 'Drexel', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
   { date: '2026-12-18', time: 'TBD', team: 'Pitt Basketball', opponent: 'Georgia State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
-  { date: '2026-12-21', time: 'TBD', team: 'Pitt Basketball', opponent: 'Cleveland State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' }
+  { date: '2026-12-21', time: 'TBD', team: 'Pitt Basketball', opponent: 'Cleveland State', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-02', time: 'TBD', team: 'Pitt Basketball', opponent: 'Miami', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-06', time: 'TBD', team: 'Pitt Basketball', opponent: 'NC State', homeAway: 'Away', venue: 'Lenovo Center', city: 'Raleigh, NC', sport: 'Basketball' },
+  { date: '2027-01-09', time: 'TBD', team: 'Pitt Basketball', opponent: 'Duke', homeAway: 'Away', venue: 'Cameron Indoor Stadium', city: 'Durham, NC', sport: 'Basketball' },
+  { date: '2027-01-12', time: 'TBD', team: 'Pitt Basketball', opponent: 'Syracuse', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-16', time: 'TBD', team: 'Pitt Basketball', opponent: 'Clemson', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-20', time: 'TBD', team: 'Pitt Basketball', opponent: 'Notre Dame', homeAway: 'Away', venue: 'Purcell Pavilion', city: 'South Bend, IN', sport: 'Basketball' },
+  { date: '2027-01-23', time: 'TBD', team: 'Pitt Basketball', opponent: 'Boston College', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-26', time: 'TBD', team: 'Pitt Basketball', opponent: 'Virginia Tech', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-01-30', time: 'TBD', team: 'Pitt Basketball', opponent: 'Florida State', homeAway: 'Away', venue: 'Donald L. Tucker Center', city: 'Tallahassee, FL', sport: 'Basketball' },
+  { date: '2027-02-02', time: 'TBD', team: 'Pitt Basketball', opponent: 'Louisville', homeAway: 'Away', venue: 'KFC Yum! Center', city: 'Louisville, KY', sport: 'Basketball' },
+  { date: '2027-02-09', time: 'TBD', team: 'Pitt Basketball', opponent: 'Virginia', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-02-13', time: 'TBD', team: 'Pitt Basketball', opponent: 'Wake Forest', homeAway: 'Away', venue: 'Lawrence Joel Veterans Memorial Coliseum', city: 'Winston-Salem, NC', sport: 'Basketball' },
+  { date: '2027-02-17', time: 'TBD', team: 'Pitt Basketball', opponent: 'California', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-02-20', time: 'TBD', team: 'Pitt Basketball', opponent: 'Georgia Tech', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-02-23', time: 'TBD', team: 'Pitt Basketball', opponent: 'Syracuse', homeAway: 'Away', venue: 'JMA Wireless Dome', city: 'Syracuse, NY', sport: 'Basketball' },
+  { date: '2027-02-27', time: 'TBD', team: 'Pitt Basketball', opponent: 'Miami', homeAway: 'Away', venue: 'Watsco Center', city: 'Coral Gables, FL', sport: 'Basketball' },
+  { date: '2027-03-02', time: 'TBD', team: 'Pitt Basketball', opponent: 'North Carolina', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2027-03-06', time: 'TBD', team: 'Pitt Basketball', opponent: 'SMU', homeAway: 'Away', venue: 'Moody Coliseum', city: 'Dallas, TX', sport: 'Basketball' }
+];
+
+var pittVolleyballGames = [
+  { date: '2026-08-23', time: '4:00 PM', team: 'Pitt Volleyball', opponent: 'Kentucky', homeAway: 'Neutral', venue: 'Fiserv Forum', city: 'Milwaukee, WI', sport: 'Volleyball' },
+  { date: '2026-08-24', time: '6:00 PM', team: 'Pitt Volleyball', opponent: 'Xavier', homeAway: 'Neutral', venue: 'Fiserv Forum', city: 'Milwaukee, WI', sport: 'Volleyball' },
+  { date: '2026-08-28', time: '6:30 PM', team: 'Pitt Volleyball', opponent: 'Kansas', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-08-30', time: '12:00 PM', team: 'Pitt Volleyball', opponent: 'Wisconsin', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-04', time: '8:30 PM', team: 'Pitt Volleyball', opponent: 'BYU', homeAway: 'Away', venue: 'Smith Fieldhouse', city: 'Provo, UT', sport: 'Volleyball' },
+  { date: '2026-09-06', time: '6:00 PM', team: 'Pitt Volleyball', opponent: 'Utah', homeAway: 'Away', venue: 'Jon M. Huntsman Center', city: 'Salt Lake City, UT', sport: 'Volleyball' },
+  { date: '2026-09-09', time: '6:30 PM', team: 'Pitt Volleyball', opponent: 'Tennessee', homeAway: 'Neutral', venue: 'ESPN Wide World of Sports', city: 'Kissimmee, FL', sport: 'Volleyball' },
+  { date: '2026-09-11', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Jacksonville', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-12', time: '5:00 PM', team: 'Pitt Volleyball', opponent: 'High Point', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-13', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'Wright State', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-25', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'California', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-27', time: '8:30 PM', team: 'Pitt Volleyball', opponent: 'Stanford', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-02', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Boston College', homeAway: 'Away', venue: 'Power Gym', city: 'Chestnut Hill, MA', sport: 'Volleyball' },
+  { date: '2026-10-04', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'Syracuse', homeAway: 'Away', venue: 'Women\'s Building', city: 'Syracuse, NY', sport: 'Volleyball' },
+  { date: '2026-10-07', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'SMU', homeAway: 'Home', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-11', time: '3:00 PM', team: 'Pitt Volleyball', opponent: 'SMU', homeAway: 'Away', venue: 'Moody Coliseum', city: 'Dallas, TX', sport: 'Volleyball' },
+  { date: '2026-10-16', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Florida State', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-18', time: '12:00 PM', team: 'Pitt Volleyball', opponent: 'Miami', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-23', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Georgia Tech', homeAway: 'Away', venue: 'O\'Keefe Gymnasium', city: 'Atlanta, GA', sport: 'Volleyball' },
+  { date: '2026-10-25', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'Clemson', homeAway: 'Away', venue: 'Jervey Gym', city: 'Clemson, SC', sport: 'Volleyball' },
+  { date: '2026-10-30', time: '6:30 PM', team: 'Pitt Volleyball', opponent: 'Wake Forest', homeAway: 'Away', venue: 'Reynolds Gymnasium', city: 'Winston-Salem, NC', sport: 'Volleyball' },
+  { date: '2026-11-01', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'NC State', homeAway: 'Away', venue: 'Reynolds Coliseum', city: 'Raleigh, NC', sport: 'Volleyball' },
+  { date: '2026-11-06', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Duke', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-08', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'North Carolina', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-11', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Notre Dame', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-15', time: '8:30 PM', team: 'Pitt Volleyball', opponent: 'Louisville', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-20', time: '7:00 PM', team: 'Pitt Volleyball', opponent: 'Virginia', homeAway: 'Away', venue: 'Memorial Gymnasium', city: 'Charlottesville, VA', sport: 'Volleyball' },
+  { date: '2026-11-22', time: '12:00 PM', team: 'Pitt Volleyball', opponent: 'Virginia Tech', homeAway: 'Away', venue: 'Cassell Coliseum', city: 'Blacksburg, VA', sport: 'Volleyball' },
+  { date: '2026-11-24', time: '10:00 PM', team: 'Pitt Volleyball', opponent: 'Stanford', homeAway: 'Away', venue: 'Maples Pavilion', city: 'Stanford, CA', sport: 'Volleyball' },
+  { date: '2026-11-28', time: '1:00 PM', team: 'Pitt Volleyball', opponent: 'NC State', homeAway: 'Home', venue: 'Victory Heights Arena', city: 'Pittsburgh, PA', sport: 'Volleyball' }
 ];
 
 var aewGames = [
-  { date: '2026-08-19', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Baltimore', homeAway: 'Event', venue: 'Chesapeake Employers Insurance Arena', city: 'Baltimore, MD', sport: 'Wrestling' },
-  { date: '2026-08-21', time: '7:00 PM', team: 'AEW', opponent: 'ROH: Death Before Dishonor', homeAway: 'Event', venue: '2300 Arena', city: 'Philadelphia, PA', sport: 'Wrestling' },
-  { date: '2026-08-22', time: '7:00 PM', team: 'AEW', opponent: 'Collision: Reading', homeAway: 'Event', venue: 'Santander Arena', city: 'Reading, PA', sport: 'Wrestling' },
-  { date: '2026-08-26', time: '5:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Glasgow', homeAway: 'Event', venue: 'OVO Hydro', city: 'Glasgow, UK', sport: 'Wrestling' },
-  { date: '2026-08-26', time: '5:00 PM', team: 'AEW', opponent: 'Dynamite Match Day Watch Party', homeAway: 'Event', venue: 'Fulham Pier', city: 'London, England', sport: 'Wrestling' },
-  { date: '2026-08-28', time: 'Multiple Sessions', team: 'AEW', opponent: 'All In: Welcome To Wembley (Fan Experience)', homeAway: 'Event', venue: 'Great Hall at Wembley Stadium', city: 'London, England', sport: 'Wrestling' },
-  { date: '2026-08-30', time: '4:30 PM', team: 'AEW', opponent: 'All In: London', homeAway: 'Event', venue: 'Wembley Stadium', city: 'London, England', sport: 'Wrestling' },
-  { date: '2026-09-02', time: '6:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Allen', homeAway: 'Event', venue: 'Credit Union of Texas Event Center', city: 'Allen, TX', sport: 'Wrestling' },
-  { date: '2026-09-09', time: '7:30 PM', team: 'AEW', opponent: 'Rebel Heart Dynamite', homeAway: 'Event', venue: 'Akins Ford Arena', city: 'Athens, GA', sport: 'Wrestling' },
-  { date: '2026-09-12', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Springfield', homeAway: 'Event', venue: 'MassMutual Center', city: 'Springfield, MA', sport: 'Wrestling' },
   { date: '2026-09-16', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Norfolk', homeAway: 'Event', venue: 'Chartway Arena', city: 'Norfolk, VA', sport: 'Wrestling' },
   { date: '2026-09-19', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Charleston', homeAway: 'Event', venue: 'Charleston Coliseum', city: 'Charleston, WV', sport: 'Wrestling' },
   { date: '2026-09-23', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite/Collision: Indianapolis', homeAway: 'Event', venue: 'Fishers Event Center', city: 'Indianapolis, IN', sport: 'Wrestling' },
   { date: '2026-09-26', time: '6:00 PM', team: 'AEW', opponent: 'All Out', homeAway: 'Event', venue: 'Now Arena', city: 'Chicago, IL', sport: 'Wrestling' },
+  { date: '2026-09-26', time: '1:00 PM', team: 'AEW', opponent: 'All Out Afternoon Block Party', homeAway: 'Event', venue: 'Hideaway Brew Garden', city: 'Chicago, IL', sport: 'Wrestling' },
   { date: '2026-09-30', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Pittsburgh', homeAway: 'Event', venue: 'Petersen Events Center', city: 'Pittsburgh, PA', sport: 'Wrestling' },
+  { date: '2026-10-03', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Highland Heights', homeAway: 'Event', venue: 'Truist Arena', city: 'Highland Heights, KY', sport: 'Wrestling' },
+  { date: '2026-10-06', time: '6:00 PM', team: 'AEW', opponent: 'Grand Slam: France', homeAway: 'Event', venue: 'Adidas Arena', city: 'Paris, France', sport: 'Wrestling' },
+  { date: '2026-10-14', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Cleveland', homeAway: 'Event', venue: 'Wolstein Center', city: 'Cleveland, OH', sport: 'Wrestling' },
   { date: '2026-10-17', time: '7:00 PM', team: 'AEW', opponent: 'WrestleDream', homeAway: 'Event', venue: 'Addition Financial Arena', city: 'Orlando, FL', sport: 'Wrestling' },
-  { date: '2026-11-14', time: '4:00 PM', team: 'AEW', opponent: 'Full Gear', homeAway: 'Event', venue: 'Mortgage Matchup Center', city: 'Phoenix, AZ', sport: 'Wrestling' }
+  { date: '2026-10-21', time: '7:30 PM', team: 'AEW', opponent: 'Dynamite: Coral Gables', homeAway: 'Event', venue: 'Watsco Center', city: 'Coral Gables, FL', sport: 'Wrestling' },
+  { date: '2026-10-24', time: '7:30 PM', team: 'AEW', opponent: 'Collision: Winston-Salem', homeAway: 'Event', venue: 'LJVM Coliseum', city: 'Winston-Salem, NC', sport: 'Wrestling' },
+  { date: '2026-10-28', time: '6:30 PM', team: 'AEW', opponent: 'Fright Night: Dynamite & Collision', homeAway: 'Event', venue: 'Chaifetz Arena', city: 'St. Louis, MO', sport: 'Wrestling' },
+  { date: '2026-11-04', time: 'TBA', team: 'AEW', opponent: 'Blood & Guts', homeAway: 'Event', venue: 'VyStar Veterans Memorial Arena', city: 'Jacksonville, FL', sport: 'Wrestling' },
+  { date: '2026-11-14', time: '4:00 PM', team: 'AEW', opponent: 'Full Gear', homeAway: 'Event', venue: 'Mortgage Matchup Center', city: 'Phoenix, AZ', sport: 'Wrestling' },
+  { date: '2026-11-21', time: '6:30 PM', team: 'AEW', opponent: 'Collision: Green Bay', homeAway: 'Event', venue: 'Resch Center', city: 'Green Bay, WI', sport: 'Wrestling' },
+  { date: '2027-02-07', time: 'TBA', team: 'AEW', opponent: 'Dynasty', homeAway: 'Event', venue: 'M&S Bank Arena', city: 'Liverpool, UK', sport: 'Wrestling' },
+  { date: '2027-02-10', time: 'TBA', team: 'AEW', opponent: 'Dynamite: London', homeAway: 'Event', venue: 'The O2', city: 'London, England', sport: 'Wrestling' }
+];
+
+var wweGames = [
+  { date: '2026-09-18', time: '6:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Hilliard Center', city: 'Corpus Christi, TX', sport: 'Wrestling' },
+  { date: '2026-09-18', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Dade City Armory', city: 'Dade City, FL', sport: 'Wrestling' },
+  { date: '2026-09-19', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Havert L. Fenn Center', city: 'Fort Pierce, FL', sport: 'Wrestling' },
+  { date: '2026-09-21', time: '6:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Frost Bank Center', city: 'San Antonio, TX', sport: 'Wrestling' },
+  { date: '2026-09-25', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Township Auditorium', city: 'Columbia, SC', sport: 'Wrestling' },
+  { date: '2026-09-25', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Gainbridge Fieldhouse', city: 'Indianapolis, IN', sport: 'Wrestling' },
+  { date: '2026-09-26', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Greensboro Coliseum Fieldhouse', city: 'Greensboro, NC', sport: 'Wrestling' },
+  { date: '2026-09-26', time: '7:30 PM', team: 'WWE', opponent: 'WWE/AAA/NXT Worlds Collide', homeAway: 'Event', venue: 'Allstate Arena', city: 'Chicago, IL', sport: 'Wrestling' },
+  { date: '2026-09-27', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Knoxville Civic Coliseum', city: 'Knoxville, TN', sport: 'Wrestling' },
+  { date: '2026-09-28', time: '6:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Fiserv Forum', city: 'Milwaukee, WI', sport: 'Wrestling' },
+  { date: '2026-10-02', time: '5:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Ball Arena', city: 'Denver, CO', sport: 'Wrestling' },
+  { date: '2026-10-05', time: '6:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Enterprise Center', city: 'St. Louis, MO', sport: 'Wrestling' },
+  { date: '2026-10-09', time: '6:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Cajundome', city: 'Lafayette, LA', sport: 'Wrestling' },
+  { date: '2026-10-10', time: '4:30 PM', team: 'WWE', opponent: 'Money in the Bank', homeAway: 'Event', venue: 'Smoothie King Center', city: 'New Orleans, LA', sport: 'Wrestling' },
+  { date: '2026-10-12', time: '6:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Brookshire Grocery Arena', city: 'Bossier City, LA', sport: 'Wrestling' },
+  { date: '2026-10-15', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Canada Life Centre', city: 'Winnipeg, MB', sport: 'Wrestling' },
+  { date: '2026-10-15', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Kitchener Memorial Auditorium', city: 'Kitchener, ON', sport: 'Wrestling' },
+  { date: '2026-10-16', time: '4:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Golden 1 Center', city: 'Sacramento, CA', sport: 'Wrestling' },
+  { date: '2026-10-16', time: '7:30 PM', team: 'WWE', opponent: 'Hawaii Live Tour', homeAway: 'Event', venue: 'Neal S. Blaisdell Arena', city: 'Honolulu, HI', sport: 'Wrestling' },
+  { date: '2026-10-16', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Sudbury Community Center', city: 'Sudbury, ON', sport: 'Wrestling' },
+  { date: '2026-10-17', time: '7:30 PM', team: 'WWE', opponent: 'NXT Live', homeAway: 'Event', venue: 'Centre Slush Puppie', city: 'Gatineau, QC', sport: 'Wrestling' },
+  { date: '2026-10-17', time: '7:30 PM', team: 'WWE', opponent: 'Hawaii Live Tour', homeAway: 'Event', venue: 'Neal S. Blaisdell Arena', city: 'Honolulu, HI', sport: 'Wrestling' },
+  { date: '2026-10-19', time: '4:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Pechanga Arena', city: 'San Diego, CA', sport: 'Wrestling' },
+  { date: '2026-10-22', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Acrisure Arena', city: 'Palm Desert, CA', sport: 'Wrestling' },
+  { date: '2026-10-23', time: '4:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Toyota Arena', city: 'Ontario, CA', sport: 'Wrestling' },
+  { date: '2026-10-26', time: '4:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Save Mart Center', city: 'Fresno, CA', sport: 'Wrestling' },
+  { date: '2026-10-29', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Covelli Centre', city: 'Youngstown, OH', sport: 'Wrestling' },
+  { date: '2026-10-30', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Charleston Coliseum', city: 'Charleston, WV', sport: 'Wrestling' },
+  { date: '2026-11-02', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Barclays Center', city: 'Brooklyn, NY', sport: 'Wrestling' },
+  { date: '2026-11-05', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Cross Insurance Arena', city: 'Portland, ME', sport: 'Wrestling' },
+  { date: '2026-11-06', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Cross Insurance Center', city: 'Bangor, ME', sport: 'Wrestling' },
+  { date: '2026-11-07', time: '7:00 PM', team: 'WWE', opponent: 'Crown Jewel', homeAway: 'Event', venue: 'Riyadh Season Stadium at KAFD', city: 'Riyadh, Saudi Arabia', sport: 'Wrestling' },
+  { date: '2026-11-09', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Bon Secours Wellness Arena', city: 'Greenville, SC', sport: 'Wrestling' },
+  { date: '2026-11-12', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Hertz Arena', city: 'Fort Myers, FL', sport: 'Wrestling' },
+  { date: '2026-11-13', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Amerant Bank Arena', city: 'Fort Lauderdale, FL', sport: 'Wrestling' },
+  { date: '2026-11-16', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Lenovo Center', city: 'Raleigh, NC', sport: 'Wrestling' },
+  { date: '2026-11-19', time: '7:30 PM', team: 'WWE', opponent: 'Road to Survivor Series: WarGames', homeAway: 'Event', venue: 'Von Braun Civic Center', city: 'Huntsville, AL', sport: 'Wrestling' },
+  { date: '2026-11-20', time: '6:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Ford Center Evansville', city: 'Evansville, IN', sport: 'Wrestling' },
+  { date: '2026-11-23', time: '4:30 PM', team: 'WWE', opponent: 'Monday Night RAW & WWE SmackDown', homeAway: 'Event', venue: 'Intrust Bank Arena', city: 'Wichita, KS', sport: 'Wrestling' },
+  { date: '2026-11-28', time: '4:30 PM', team: 'WWE', opponent: 'Survivor Series: WarGames', homeAway: 'Event', venue: 'Daikin Park', city: 'Houston, TX', sport: 'Wrestling' },
+  { date: '2026-11-30', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Simmons Bank Arena', city: 'North Little Rock, AR', sport: 'Wrestling' },
+  { date: '2026-12-04', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Van Andel Arena', city: 'Grand Rapids, MI', sport: 'Wrestling' },
+  { date: '2026-12-07', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'Huntington Center', city: 'Toledo, OH', sport: 'Wrestling' },
+  { date: '2026-12-11', time: '6:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'RAC Arena', city: 'Perth, WA', sport: 'Wrestling' },
+  { date: '2026-12-12', time: '6:30 PM', team: 'WWE', opponent: 'Wrestlepalooza: Perth', homeAway: 'Event', venue: 'RAC Arena', city: 'Perth, WA', sport: 'Wrestling' },
+  { date: '2026-12-14', time: '6:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'RAC Arena', city: 'Perth, WA', sport: 'Wrestling' },
+  { date: '2027-01-15', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Forest National', city: 'Brussels, Belgium', sport: 'Wrestling' },
+  { date: '2027-01-16', time: '7:30 PM', team: 'WWE', opponent: 'Road to Royal Rumble', homeAway: 'Event', venue: 'PreZero Arena Gliwice', city: 'Gliwice, Poland', sport: 'Wrestling' },
+  { date: '2027-01-17', time: '7:30 PM', team: 'WWE', opponent: 'Road to Royal Rumble', homeAway: 'Event', venue: 'Ziggo Dome', city: 'Amsterdam, Netherlands', sport: 'Wrestling' },
+  { date: '2027-01-18', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: 'OVO Hydro', city: 'Glasgow, UK', sport: 'Wrestling' },
+  { date: '2027-01-22', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Co-Op Live', city: 'Manchester, England', sport: 'Wrestling' },
+  { date: '2027-01-23', time: '7:30 PM', team: 'WWE', opponent: 'Road to Royal Rumble', homeAway: 'Event', venue: 'Avicii Arena', city: 'Stockholm, Sweden', sport: 'Wrestling' },
+  { date: '2027-01-24', time: '7:00 PM', team: 'WWE', opponent: 'Road to Royal Rumble', homeAway: 'Event', venue: 'MVM Dome', city: 'Budapest, Hungary', sport: 'Wrestling' },
+  { date: '2027-01-25', time: '7:30 PM', team: 'WWE', opponent: 'Monday Night RAW', homeAway: 'Event', venue: '3Arena', city: 'Dublin, Ireland', sport: 'Wrestling' },
+  { date: '2027-02-19', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Spectrum Center', city: 'Charlotte, NC', sport: 'Wrestling' }
 ];
 
 var builtInGames = []
@@ -579,12 +695,14 @@ var builtInGames = []
   .concat(ohioStateGames)
   .concat(duquesneFootballGames)
   .concat(pittBasketballGames)
-  .concat(aewGames);
+  .concat(pittVolleyballGames)
+  .concat(aewGames)
+  .concat(wweGames);
 
 var uploadedGames = [];
 var scheduleData = builtInGames.slice();
 
-var deselectedTeams = new Set(['AEW']);
+var deselectedTeams = new Set(['AEW', 'WWE']);
 var knownTeams = new Set(scheduleData.map(function(g) { return g.team; }));
 var currentView = 'list';
 var maxDaysBetween = 4;
@@ -627,7 +745,38 @@ var cityCoords = {
   'Athens, GA': [33.9519, -83.3576], 'Springfield, MA': [42.1015, -72.5898],
   'Norfolk, VA': [36.8508, -76.2859], 'Charleston, WV': [38.3498, -81.6326],
   'Orlando, FL': [28.5383, -81.3792], 'London, England': [51.5074, -0.1278],
-  'Glasgow, UK': [55.8642, -4.2518]
+  'Glasgow, UK': [55.8642, -4.2518],
+  'Durham, NC': [35.9940, -78.8986], 'South Bend, IN': [41.6764, -86.2520],
+  'Tallahassee, FL': [30.4383, -84.2807], 'Winston-Salem, NC': [36.0999, -80.2442],
+  'Syracuse, NY': [43.0481, -76.1474], 'Coral Gables, FL': [25.7215, -80.2684],
+  'Dallas, TX': [32.7767, -96.7970], 'Fort Myers, FL': [26.6406, -81.8723],
+  'Columbia, MO': [38.9517, -92.3341], 'Provo, UT': [40.2338, -111.6585],
+  'Kissimmee, FL': [28.2920, -81.4076], 'Atlanta, GA': [33.7490, -84.3880],
+  'Clemson, SC': [34.6834, -82.8374], 'Charlottesville, VA': [38.0293, -78.4767],
+  'Stanford, CA': [37.4275, -122.1697],
+  'Highland Heights, KY': [39.0334, -84.4527], 'Green Bay, WI': [44.5133, -88.0133],
+  'Liverpool, UK': [53.4084, -2.9916],
+  'Corpus Christi, TX': [27.8006, -97.3964], 'Dade City, FL': [28.3661, -82.1968],
+  'Fort Pierce, FL': [27.4467, -80.3256], 'San Antonio, TX': [29.4241, -98.4936],
+  'Columbia, SC': [34.0007, -81.0348], 'Greensboro, NC': [36.0726, -79.7920],
+  'Knoxville, TN': [35.9606, -83.9207], 'Denver, CO': [39.7392, -104.9903],
+  'Lafayette, LA': [30.2241, -92.0198], 'New Orleans, LA': [29.9511, -90.0715],
+  'Bossier City, LA': [32.5160, -93.7321], 'Kitchener, ON': [43.4516, -80.4925],
+  'Sacramento, CA': [38.5816, -121.4944], 'Honolulu, HI': [21.3069, -157.8583],
+  'Sudbury, ON': [46.4917, -80.9930], 'Gatineau, QC': [45.4765, -75.7013],
+  'San Diego, CA': [32.7157, -117.1611], 'Palm Desert, CA': [33.7222, -116.3745],
+  'Ontario, CA': [34.0633, -117.6509], 'Fresno, CA': [36.7378, -119.7871],
+  'Brooklyn, NY': [40.6782, -73.9442], 'Portland, ME': [43.6591, -70.2568],
+  'Bangor, ME': [44.8016, -68.7712], 'Riyadh, Saudi Arabia': [24.7136, 46.6753],
+  'Greenville, SC': [34.8526, -82.3940], 'Fort Lauderdale, FL': [26.1224, -80.1373],
+  'Huntsville, AL': [34.7304, -86.5861], 'Evansville, IN': [37.9716, -87.5711],
+  'Wichita, KS': [37.6872, -97.3301], 'Houston, TX': [29.7604, -95.3698],
+  'North Little Rock, AR': [34.7695, -92.2671], 'Grand Rapids, MI': [42.9634, -85.6681],
+  'Toledo, OH': [41.6528, -83.5379], 'Perth, WA': [-31.9505, 115.8605],
+  'Brussels, Belgium': [50.8503, 4.3517], 'Gliwice, Poland': [50.2945, 18.6714],
+  'Amsterdam, Netherlands': [52.3676, 4.9041], 'Manchester, England': [53.4808, -2.2426],
+  'Stockholm, Sweden': [59.3293, 18.0686], 'Budapest, Hungary': [47.4979, 19.0402],
+  'Dublin, Ireland': [53.3498, -6.2603], 'Charlotte, NC': [35.2271, -80.8431]
 };
 
 function distanceMiles(cityA, cityB) {
@@ -733,7 +882,7 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
 function clearAll() {
   uploadedGames = [];
   scheduleData = builtInGames.slice();
-  deselectedTeams = new Set(['AEW']);
+  deselectedTeams = new Set(['AEW', 'WWE']);
   knownTeams = new Set(builtInGames.map(function(g) { return g.team; }));
   document.getElementById('startDate').value = '';
   document.getElementById('endDate').value = '';
@@ -875,6 +1024,7 @@ var teamColorOverrides = {
   'Penguins': '#111111',
   'Pitt Football': '#0047AB',
   'Pitt Basketball': '#0047AB',
+  'Pitt Volleyball': '#0047AB',
   'AEW': '#7C3AED',
   'WWE': '#7C3AED',
   'Duquesne Football': '#0A1F44'
@@ -887,6 +1037,7 @@ var teamLetterOverrides = {
   'Penguins': 'P',
   'Pitt Football': 'P',
   'Pitt Basketball': 'P',
+  'Pitt Volleyball': 'P',
   'AEW': 'A',
   'WWE': 'W',
   'Duquesne Football': 'D'
