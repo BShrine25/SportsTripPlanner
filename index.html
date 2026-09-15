@@ -1082,60 +1082,81 @@ function collapseIntoSeries(games) {
   return series;
 }
 
-// Kept for the "X days later" display text on trip cards (not used for qualifying anymore).
-function daysBetweenSeries(s1, s2) {
-  var d1start = new Date(s1.startDate), d1end = new Date(s1.endDate);
-  var d2start = new Date(s2.startDate), d2end = new Date(s2.endDate);
-  if (d2start <= d1end && d1start <= d2end) return 0;
-  if (d2start > d1end) return (d2start - d1end) / (1000 * 60 * 60 * 24);
-  return (d1start - d2end) / (1000 * 60 * 60 * 24);
-}
-
-// Finds games near (but outside) the cluster's date window - within 2 days before/after -
-// that are also within the mile radius, so they can be noted without inflating the cluster.
-function findNearMisses(allSeries, s1, s2, maxMi) {
-  var minStart = new Date(Math.min(new Date(s1.startDate), new Date(s2.startDate)));
-  var maxEnd = new Date(Math.max(new Date(s1.endDate), new Date(s2.endDate)));
-  var extStart = new Date(minStart); extStart.setDate(extStart.getDate() - 2);
-  var extEnd = new Date(maxEnd); extEnd.setDate(extEnd.getDate() + 2);
-  var notes = [];
-  allSeries.forEach(function(s) {
-    if (s === s1 || s === s2) return;
-    if (s.team === s1.team || s.team === s2.team) return;
-    var sStart = new Date(s.startDate), sEnd = new Date(s.endDate);
-    var withinExtended = sEnd >= extStart && sStart <= extEnd;
-    var withinActual = sEnd >= minStart && sStart <= maxEnd;
-    if (withinExtended && !withinActual) {
-      if (citiesAreNearby(s.city, s1.city, maxMi) || citiesAreNearby(s.city, s2.city, maxMi)) {
-        notes.push(s);
-      }
-    }
-  });
-  return notes;
-}
-
+// Multi-stop trip clustering: groups all series connected by city/mileage into
+// components, then within each component finds maximal date-clusters whose
+// total inclusive span fits within maxDays. This replaces the old pairwise-only
+// logic, which couldn't represent a genuine 3+ stop trip and instead fragmented
+// it into overlapping 2-stop cards with everything else wrongly noted as "outside."
 function buildTrips(seriesList, maxDays, maxMi) {
-  var sorted = seriesList.slice().sort(function(a, b) { return a.startDate.localeCompare(b.startDate); });
-  var trips = [];
-  for (var i = 0; i < sorted.length; i++) {
-    for (var j = i + 1; j < sorted.length; j++) {
-      var s1 = sorted[i], s2 = sorted[j];
-      if (s1.team === s2.team) continue;
-
-      var d1s = new Date(s1.startDate), d1e = new Date(s1.endDate);
-      var d2s = new Date(s2.startDate), d2e = new Date(s2.endDate);
-      var minStart = d1s < d2s ? d1s : d2s;
-      var maxEnd = d1e > d2e ? d1e : d2e;
-      var clusterSpanDays = Math.round((maxEnd - minStart) / (1000 * 60 * 60 * 24)) + 1;
-      if (clusterSpanDays > maxDays) continue;
-
-      if (citiesAreNearby(s1.city, s2.city, maxMi)) {
-        var pair = [s1, s2];
-        pair.notes = findNearMisses(sorted, s1, s2, maxMi);
-        trips.push(pair);
-      }
+  var n = seriesList.length;
+  var parent = seriesList.map(function(_, i) { return i; });
+  function find(x) { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
+  function union(a, b) { var ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; }
+  for (var i = 0; i < n; i++) {
+    for (var j = i + 1; j < n; j++) {
+      if (seriesList[i].team === seriesList[j].team) continue;
+      if (citiesAreNearby(seriesList[i].city, seriesList[j].city, maxMi)) union(i, j);
     }
   }
+  var groups = {};
+  for (var k = 0; k < n; k++) {
+    var r = find(k);
+    if (!groups[r]) groups[r] = [];
+    groups[r].push(seriesList[k]);
+  }
+
+  var trips = [];
+  Object.keys(groups).forEach(function(key) {
+    var comp = groups[key].slice().sort(function(a, b) { return a.startDate.localeCompare(b.startDate); });
+    var m = comp.length;
+    var candidates = [];
+
+    for (var s = 0; s < m; s++) {
+      var cluster = [comp[s]];
+      var minD = new Date(comp[s].startDate), maxD = new Date(comp[s].endDate);
+      for (var t = s + 1; t < m; t++) {
+        var cand = comp[t];
+        var candStart = new Date(cand.startDate), candEnd = new Date(cand.endDate);
+        var newMin = candStart < minD ? candStart : minD;
+        var newMax = candEnd > maxD ? candEnd : maxD;
+        var span = Math.round((newMax - newMin) / (1000 * 60 * 60 * 24)) + 1;
+        if (span <= maxDays) {
+          cluster.push(cand);
+          minD = newMin; maxD = newMax;
+        } else {
+          break; // sorted by date, so span only grows from here
+        }
+      }
+      if (cluster.length >= 2) candidates.push(cluster);
+    }
+
+    // Keep only clusters that add meaningfully new information (not fully
+    // redundant with an already-accepted larger cluster).
+    candidates.sort(function(a, b) { return b.length - a.length; });
+    var accepted = [];
+    candidates.forEach(function(c) {
+      var overlapCount = c.filter(function(item) {
+        return accepted.some(function(acc) { return acc.indexOf(item) !== -1; });
+      }).length;
+      if (overlapCount < c.length) accepted.push(c);
+    });
+
+    accepted.forEach(function(c) {
+      var cMinD = new Date(c[0].startDate), cMaxD = new Date(c[c.length - 1].endDate);
+      var extStart = new Date(cMinD); extStart.setDate(extStart.getDate() - 2);
+      var extEnd = new Date(cMaxD); extEnd.setDate(extEnd.getDate() + 2);
+      var notes = [];
+      comp.forEach(function(s2) {
+        if (c.indexOf(s2) !== -1) return;
+        var s2Start = new Date(s2.startDate), s2End = new Date(s2.endDate);
+        var withinExt = s2End >= extStart && s2Start <= extEnd;
+        var withinActual = s2End >= cMinD && s2Start <= cMaxD;
+        if (withinExt && !withinActual) notes.push(s2);
+      });
+      trips.push({ series: c, notes: notes });
+    });
+  });
+
   return trips;
 }
 
@@ -1143,42 +1164,47 @@ function getHighlightedDateMap(games) {
   var series = collapseIntoSeries(games);
   var trips = buildTrips(series, maxDaysBetween, maxMiles);
   var map = {};
-  trips.forEach(function(pair) {
-    var cur = new Date(pair[0].startDate + 'T00:00:00');
-    var end = new Date(pair[1].endDate + 'T00:00:00');
+  trips.forEach(function(trip) {
+    var cur = new Date(trip.series[0].startDate + 'T00:00:00');
+    var end = new Date(trip.series[trip.series.length - 1].endDate + 'T00:00:00');
     while (cur <= end) {
       var ds = cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate());
       if (!map[ds]) map[ds] = [];
-      map[ds].push(pair);
+      map[ds].push(trip);
       cur.setDate(cur.getDate() + 1);
     }
   });
   return map;
 }
 
-function tripCardHtml(pair) {
-  var s1 = pair[0], s2 = pair[1];
-  var cities = Array.from(new Set([s1.city, s2.city]));
-  var start = s1.startDate, end = s2.endDate;
-  var d1end = new Date(s1.endDate), d2start = new Date(s2.startDate);
-  var gapDays = Math.round((d2start - d1end) / (1000 * 60 * 60 * 24));
-  var miles = Math.round(distanceMiles(s1.city, s2.city));
+function tripCardHtml(trip) {
+  var stops = trip.series;
+  var cities = Array.from(new Set(stops.map(function(s) { return s.city; })));
+  var start = stops[0].startDate, end = stops[stops.length - 1].endDate;
 
-  function stopHtml(s) {
+  function stopHtml(s, idx) {
     var opp = Array.from(s.opponents).join(', ');
     var label = s.games[0].homeAway === 'Event' ? opp : 'vs ' + opp;
     var dateRange = formatDate(s.startDate) + (s.endDate !== s.startDate ? ' - ' + formatDate(s.endDate) : '');
-    return '<div class="timeline-stop"><div class="timeline-dot"></div><div class="timeline-stop-content">' +
+    var gapHtml = '';
+    if (idx > 0) {
+      var prev = stops[idx - 1];
+      var d1end = new Date(prev.endDate), d2start = new Date(s.startDate);
+      var gapDays = Math.round((d2start - d1end) / (1000 * 60 * 60 * 24));
+      var miles = Math.round(distanceMiles(prev.city, s.city));
+      gapHtml = '<div class="timeline-gap">↓ ' + (gapDays <= 0 ? 'same window' : gapDays + ' day' + (gapDays !== 1 ? 's' : '') + ' later') + ' • ~' + miles + ' mi</div>';
+    }
+    return gapHtml + '<div class="timeline-stop"><div class="timeline-dot"></div><div class="timeline-stop-content">' +
       '<div class="timeline-team">' + s.team + '</div><div class="timeline-opp">' + label + '</div>' +
       '<div class="timeline-meta">📅 ' + dateRange + ' • 📍 ' + s.venue + ', ' + s.city + '</div></div></div>';
   }
 
-  var gapHtml = '<div class="timeline-gap">↓ ' + (gapDays <= 0 ? 'same window' : gapDays + ' day' + (gapDays !== 1 ? 's' : '') + ' later') + ' • ~' + miles + ' mi</div>';
+  var timelineHtml = stops.map(stopHtml).join('');
 
   var notesHtml = '';
-  if (pair.notes && pair.notes.length > 0) {
+  if (trip.notes && trip.notes.length > 0) {
     notesHtml = '<div class="trip-notes"><div class="trip-notes-label">Also nearby (outside day window)</div>' +
-      pair.notes.map(function(s) {
+      trip.notes.map(function(s) {
         var opp = Array.from(s.opponents).join(', ');
         var label = s.games[0].homeAway === 'Event' ? opp : 'vs ' + opp;
         var dateRange = formatDate(s.startDate) + (s.endDate !== s.startDate ? ' - ' + formatDate(s.endDate) : '');
@@ -1190,8 +1216,8 @@ function tripCardHtml(pair) {
   return '<div class="trip-card"><div class="trip-card-header"><div>' +
     '<div class="trip-title">' + cities.join(' → ') + '</div>' +
     '<div class="trip-subtitle">' + formatDate(start) + ' – ' + formatDate(end) + '</div></div>' +
-    '<span class="trip-count-badge">2 stops</span></div>' +
-    '<div class="timeline"><div class="timeline-line"></div>' + stopHtml(s1) + gapHtml + stopHtml(s2) + '</div>' +
+    '<span class="trip-count-badge">' + stops.length + ' stops</span></div>' +
+    '<div class="timeline"><div class="timeline-line"></div>' + timelineHtml + '</div>' +
     notesHtml +
   '</div>';
 }
