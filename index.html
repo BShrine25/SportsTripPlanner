@@ -122,10 +122,12 @@
 <body>
 
 <!--
-  STILL MISSING FROM DATA (not shown in UI per user request, tracked here instead):
-  Pitt Baseball, Pitt Wrestling, Duquesne Basketball, Duquesne Volleyball, WWE.
-  Pitt Volleyball and Pitt Basketball (full ACC schedule) are now included as of the last update.
-  When adding new teams via CSV: everything defaults DESELECTED except explicit exceptions coded in JS.
+  All originally-planned teams are now in the app. Pitt Wrestling was
+  deliberately excluded per user preference and is not being tracked.
+  Pitt Baseball currently only has its fall exhibition slate published;
+  the full spring season should be added once released.
+  Default-deselected teams: AEW, WWE, Pitt Baseball, Duquesne Basketball,
+  Duquesne Volleyball.
 -->
 
 <div class="app-header">
@@ -686,6 +688,63 @@ var wweGames = [
   { date: '2027-02-19', time: '7:30 PM', team: 'WWE', opponent: 'Friday Night SmackDown', homeAway: 'Event', venue: 'Spectrum Center', city: 'Charlotte, NC', sport: 'Wrestling' }
 ];
 
+var pittBaseballGames = [
+  { date: '2026-10-04', time: '1:00 PM', team: 'Pitt Baseball', opponent: 'Navy', homeAway: 'Home', venue: 'Charles L. Cost Field', city: 'Pittsburgh, PA', sport: 'Baseball' },
+  { date: '2026-10-11', time: '1:00 PM', team: 'Pitt Baseball', opponent: 'Youngstown State', homeAway: 'Home', venue: 'Charles L. Cost Field', city: 'Pittsburgh, PA', sport: 'Baseball' },
+  { date: '2026-10-17', time: 'TBD', team: 'Pitt Baseball', opponent: 'Kent State', homeAway: 'Away', venue: 'TBD', city: 'Kent, OH', sport: 'Baseball' },
+  { date: '2026-10-24', time: '1:00 PM', team: 'Pitt Baseball', opponent: 'Mercyhurst', homeAway: 'Home', venue: 'Charles L. Cost Field', city: 'Pittsburgh, PA', sport: 'Baseball' }
+];
+
+var duquesneBasketballGames = [
+  { date: '2026-11-03', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Purdue Fort Wayne', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-07', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Central State', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-10', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Washington State', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-14', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Binghamton', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-18', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Howard', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-11-22', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Wyoming', homeAway: 'Neutral', venue: 'Ocean Center (Sunshine Slam)', city: 'Fort Myers, FL', sport: 'Basketball' },
+  { date: '2026-11-24', time: 'TBD', team: 'Duquesne Basketball', opponent: 'High Point', homeAway: 'Neutral', venue: 'Ocean Center (Sunshine Slam)', city: 'Fort Myers, FL', sport: 'Basketball' },
+  { date: '2026-11-28', time: 'TBD', team: 'Duquesne Basketball', opponent: 'South Carolina State', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-05', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Kansas City', homeAway: 'Neutral', venue: 'St. Vincent-St. Mary HS (Morgan & Morgan Classic)', city: 'Youngstown, OH', sport: 'Basketball' },
+  { date: '2026-12-09', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Robert Morris', homeAway: 'Neutral', venue: 'PPG Paints Arena (Backyard Basketball Classic)', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-12', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Canisius', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-15', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Delaware', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-20', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Niagara', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' },
+  { date: '2026-12-27', time: 'TBD', team: 'Duquesne Basketball', opponent: 'Cleary', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Basketball' }
+];
+
+var duquesneVolleyballGames = [
+  { date: '2026-08-28', time: '11:00 AM', team: 'Duquesne Volleyball', opponent: 'Canisius', homeAway: 'Neutral', venue: 'Beeghly Center (YSU Invitational)', city: 'Youngstown, OH', sport: 'Volleyball' },
+  { date: '2026-08-28', time: '7:00 PM', team: 'Duquesne Volleyball', opponent: 'Youngstown State', homeAway: 'Away', venue: 'Beeghly Center', city: 'Youngstown, OH', sport: 'Volleyball' },
+  { date: '2026-08-29', time: '12:00 PM', team: 'Duquesne Volleyball', opponent: 'Mercyhurst', homeAway: 'Neutral', venue: 'Beeghly Center (YSU Invitational)', city: 'Youngstown, OH', sport: 'Volleyball' },
+  { date: '2026-09-04', time: '11:00 AM', team: 'Duquesne Volleyball', opponent: 'Eastern Michigan', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-04', time: '6:00 PM', team: 'Duquesne Volleyball', opponent: 'Elon', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-05', time: '3:00 PM', team: 'Duquesne Volleyball', opponent: 'Robert Morris', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-11', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Northern Kentucky', homeAway: 'Neutral', venue: 'College of Charleston Classic', city: 'Charleston, SC', sport: 'Volleyball' },
+  { date: '2026-09-11', time: '7:00 PM', team: 'Duquesne Volleyball', opponent: 'College of Charleston', homeAway: 'Away', venue: 'College of Charleston Classic', city: 'Charleston, SC', sport: 'Volleyball' },
+  { date: '2026-09-12', time: '10:00 AM', team: 'Duquesne Volleyball', opponent: 'Notre Dame', homeAway: 'Neutral', venue: 'College of Charleston Classic', city: 'Charleston, SC', sport: 'Volleyball' },
+  { date: '2026-09-18', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Maryland Eastern Shore', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-19', time: '2:00 PM', team: 'Duquesne Volleyball', opponent: 'Siena', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-25', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Fordham', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-09-26', time: '2:00 PM', team: 'Duquesne Volleyball', opponent: 'Fordham', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-02', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Saint Louis', homeAway: 'Away', venue: 'TBD', city: 'St. Louis, MO', sport: 'Volleyball' },
+  { date: '2026-10-03', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Saint Louis', homeAway: 'Away', venue: 'TBD', city: 'St. Louis, MO', sport: 'Volleyball' },
+  { date: '2026-10-06', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Dayton', homeAway: 'Away', venue: 'TBD', city: 'Dayton, OH', sport: 'Volleyball' },
+  { date: '2026-10-09', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Loyola Chicago', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-10', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Loyola Chicago', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-16', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Rhode Island', homeAway: 'Away', venue: 'TBD', city: 'Kingston, RI', sport: 'Volleyball' },
+  { date: '2026-10-17', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Rhode Island', homeAway: 'Away', venue: 'TBD', city: 'Kingston, RI', sport: 'Volleyball' },
+  { date: '2026-10-23', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'VCU', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-24', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'VCU', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-27', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Dayton', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-10-31', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Davidson', homeAway: 'Away', venue: 'TBD', city: 'Davidson, NC', sport: 'Volleyball' },
+  { date: '2026-11-01', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Davidson', homeAway: 'Away', venue: 'TBD', city: 'Davidson, NC', sport: 'Volleyball' },
+  { date: '2026-11-06', time: '6:00 PM', team: 'Duquesne Volleyball', opponent: 'George Washington', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-07', time: '2:00 PM', team: 'Duquesne Volleyball', opponent: 'George Washington', homeAway: 'Home', venue: 'UPMC Cooper Fieldhouse', city: 'Pittsburgh, PA', sport: 'Volleyball' },
+  { date: '2026-11-13', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'George Mason', homeAway: 'Away', venue: 'TBD', city: 'Fairfax, VA', sport: 'Volleyball' },
+  { date: '2026-11-14', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'George Mason', homeAway: 'Away', venue: 'TBD', city: 'Fairfax, VA', sport: 'Volleyball' },
+  { date: '2026-11-20', time: 'TBD', team: 'Duquesne Volleyball', opponent: 'Atlantic 10 Championship', homeAway: 'Neutral', venue: 'Gentile Arena', city: 'Chicago, IL', sport: 'Volleyball' }
+];
+
 var builtInGames = []
   .concat(buildMlbGames('Pittsburgh Pirates', piratesRaw))
   .concat(buildMlbGames('Cleveland Guardians', guardiansRaw))
@@ -696,13 +755,16 @@ var builtInGames = []
   .concat(duquesneFootballGames)
   .concat(pittBasketballGames)
   .concat(pittVolleyballGames)
+  .concat(pittBaseballGames)
+  .concat(duquesneBasketballGames)
+  .concat(duquesneVolleyballGames)
   .concat(aewGames)
   .concat(wweGames);
 
 var uploadedGames = [];
 var scheduleData = builtInGames.slice();
 
-var deselectedTeams = new Set(['AEW', 'WWE']);
+var deselectedTeams = new Set(['AEW', 'WWE', 'Pitt Baseball', 'Duquesne Basketball', 'Duquesne Volleyball']);
 var knownTeams = new Set(scheduleData.map(function(g) { return g.team; }));
 var currentView = 'list';
 var maxDaysBetween = 4;
@@ -776,7 +838,10 @@ var cityCoords = {
   'Brussels, Belgium': [50.8503, 4.3517], 'Gliwice, Poland': [50.2945, 18.6714],
   'Amsterdam, Netherlands': [52.3676, 4.9041], 'Manchester, England': [53.4808, -2.2426],
   'Stockholm, Sweden': [59.3293, 18.0686], 'Budapest, Hungary': [47.4979, 19.0402],
-  'Dublin, Ireland': [53.3498, -6.2603], 'Charlotte, NC': [35.2271, -80.8431]
+  'Dublin, Ireland': [53.3498, -6.2603], 'Charlotte, NC': [35.2271, -80.8431],
+  'Charleston, SC': [32.7765, -79.9311], 'Dayton, OH': [39.7589, -84.1916],
+  'Kingston, RI': [41.4901, -71.4128], 'Davidson, NC': [35.4993, -80.8487],
+  'Fairfax, VA': [38.8462, -77.3064]
 };
 
 function distanceMiles(cityA, cityB) {
@@ -882,7 +947,7 @@ document.getElementById('csvInput').addEventListener('change', function(e) {
 function clearAll() {
   uploadedGames = [];
   scheduleData = builtInGames.slice();
-  deselectedTeams = new Set(['AEW', 'WWE']);
+  deselectedTeams = new Set(['AEW', 'WWE', 'Pitt Baseball', 'Duquesne Basketball', 'Duquesne Volleyball']);
   knownTeams = new Set(builtInGames.map(function(g) { return g.team; }));
   document.getElementById('startDate').value = '';
   document.getElementById('endDate').value = '';
@@ -1025,9 +1090,12 @@ var teamColorOverrides = {
   'Pitt Football': '#0047AB',
   'Pitt Basketball': '#0047AB',
   'Pitt Volleyball': '#0047AB',
+  'Pitt Baseball': '#0047AB',
   'AEW': '#7C3AED',
   'WWE': '#7C3AED',
-  'Duquesne Football': '#0A1F44'
+  'Duquesne Football': '#0A1F44',
+  'Duquesne Basketball': '#0A1F44',
+  'Duquesne Volleyball': '#0A1F44'
 };
 var teamLetterOverrides = {
   'Ohio State': 'O',
@@ -1038,6 +1106,7 @@ var teamLetterOverrides = {
   'Pitt Football': 'P',
   'Pitt Basketball': 'P',
   'Pitt Volleyball': 'P',
+  'Pitt Baseball': 'P',
   'AEW': 'A',
   'WWE': 'W',
   'Duquesne Football': 'D'
