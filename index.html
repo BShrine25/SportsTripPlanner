@@ -253,6 +253,14 @@ function buildMlbGames(teamName, raws) {
   });
 }
 
+var guardiansPostseason2026 = [
+  { date: '2026-10-03', time: '1:00 PM', team: 'Cleveland Guardians', opponent: 'Chicago White Sox (ALDS Gm 1)', homeAway: 'Home', venue: 'Progressive Field', city: 'Cleveland, OH', sport: 'Baseball' },
+  { date: '2026-10-05', time: '5:00 PM', team: 'Cleveland Guardians', opponent: 'Chicago White Sox (ALDS Gm 2)', homeAway: 'Home', venue: 'Progressive Field', city: 'Cleveland, OH', sport: 'Baseball' },
+  { date: '2026-10-07', time: '4:00 PM', team: 'Cleveland Guardians', opponent: 'Chicago White Sox (ALDS Gm 3)', homeAway: 'Away', venue: 'Rate Field', city: 'Chicago, IL', sport: 'Baseball' },
+  { date: '2026-10-08', time: '5:00 PM', team: 'Cleveland Guardians', opponent: 'Chicago White Sox (ALDS Gm 4, if necessary)', homeAway: 'Away', venue: 'Rate Field', city: 'Chicago, IL', sport: 'Baseball' },
+  { date: '2026-10-10', time: '5:00 PM', team: 'Cleveland Guardians', opponent: 'Chicago White Sox (ALDS Gm 5, if necessary)', homeAway: 'Home', venue: 'Progressive Field', city: 'Cleveland, OH', sport: 'Baseball' }
+];
+
 var piratesRaw2027 = [
   { date: '2027-03-25', time: 'TBD', raw: 'Athletics at Pittsburgh Pirates' },
   { date: '2027-03-26', time: 'TBD', raw: 'Athletics at Pittsburgh Pirates' },
@@ -1138,6 +1146,7 @@ var builtInGames = []
   .concat(buildMlbGames('Pittsburgh Pirates', piratesRaw2027))
   .concat(buildMlbGames('Cleveland Guardians', guardiansRaw))
   .concat(buildMlbGames('Cleveland Guardians', guardiansRaw2027))
+  .concat(guardiansPostseason2026)
   .concat(steelersGames)
   .concat(penguinsGames)
   .concat(pittFootballGames)
