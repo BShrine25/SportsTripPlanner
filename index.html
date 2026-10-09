@@ -1962,6 +1962,9 @@ var TRACKED = [
   { name: 'Pitt Baseball',       lg: 'cbs',    match: 'Pittsburgh Panthers' }
 ];
 
+// Teams checked on the Schedule tab are the only ones used for Scores/Standings.
+function activeTracked() { return TRACKED.filter(function(t) { return !deselectedTeams.has(t.name); }); }
+
 var WATCH_KEY = 'stp_watchlist_v1';
 function loadWatchlist() {
   try { var r = localStorage.getItem(WATCH_KEY); var a = r ? JSON.parse(r) : []; return Array.isArray(a) ? a : []; }
@@ -1990,8 +1993,9 @@ function isWatchedTeam(lg, team) {
   if (!team) return false;
   var dn = String(team.displayName || '').toLowerCase();
   var i;
-  for (i = 0; i < TRACKED.length; i++) {
-    if (TRACKED[i].lg === lg && dn === TRACKED[i].match.toLowerCase()) return true;
+  var act = activeTracked();
+  for (i = 0; i < act.length; i++) {
+    if (act[i].lg === lg && dn === act[i].match.toLowerCase()) return true;
   }
   for (i = 0; i < watchlist.length; i++) {
     if (watchlist[i].lg === lg && String(watchlist[i].id) === String(team.id)) return true;
@@ -2001,7 +2005,7 @@ function isWatchedTeam(lg, team) {
 
 function leaguesInUse() {
   var seen = {}, out = [];
-  TRACKED.forEach(function(t) { if (!seen[t.lg]) { seen[t.lg] = 1; out.push(t.lg); } });
+  activeTracked().forEach(function(t) { if (!seen[t.lg]) { seen[t.lg] = 1; out.push(t.lg); } });
   watchlist.forEach(function(w) { if (LEAGUES[w.lg] && !seen[w.lg]) { seen[w.lg] = 1; out.push(w.lg); } });
   return out;
 }
@@ -2123,6 +2127,7 @@ function gameScoreCardHtml(g) {
 var groupsByLg = {};
 var groupsErr = {};
 var PREF_KEY = 'stp_scores_prefs_v1';
+var scoresChoice = 'mine';
 var showConf = true, showTop25 = true;
 (function() { try { var r = JSON.parse(localStorage.getItem(PREF_KEY) || '{}'); if (r.showConf === false) showConf = false; if (r.showTop25 === false) showTop25 = false; } catch (e) {} })();
 function savePrefs() { try { localStorage.setItem(PREF_KEY, JSON.stringify({ showConf: showConf, showTop25: showTop25 })); } catch (e) {} }
@@ -2133,24 +2138,33 @@ function inGroup(gr, team) {
   return gr.ids[String(team.id)] === 1 || gr.names[String(team.displayName || '').toLowerCase()] === 1;
 }
 
+var groupsByTeam = {};
+var groupsLoaded = {};
+function activeGroups(lg) {
+  var seen = {}, out = [];
+  activeTracked().forEach(function(t) {
+    var g = t.lg === lg ? groupsByTeam[t.name] : null;
+    if (g && !seen[g.name]) { seen[g.name] = 1; out.push(g); }
+  });
+  return out;
+}
+
 function ensureGroups() {
   var lgs = {};
   TRACKED.forEach(function(t) { lgs[t.lg] = 1; });
   return Promise.all(Object.keys(lgs).map(function(lg) {
-    if (groupsByLg[lg]) return null;
+    if (groupsLoaded[lg]) return null;
     return getStandingsRaw(lg).then(function(root) {
       var groups = collectGroups(root || {}, []);
-      var found = {}, out = [];
       TRACKED.filter(function(t) { return t.lg === lg; }).forEach(function(t) {
         var opt = { match: t.match, tid: null };
         var gr = groups.filter(function(g) { return g.entries.some(function(e) { return entryIsTeam(e, opt); }); })[0];
-        if (!gr || found[gr.name]) return;
-        found[gr.name] = 1;
+        if (!gr) return;
         var ids = {}, names = {};
         gr.entries.forEach(function(e) { if (e.team) { ids[String(e.team.id)] = 1; names[String(e.team.displayName || '').toLowerCase()] = 1; } });
-        out.push({ name: gr.name, ids: ids, names: names });
+        groupsByTeam[t.name] = { name: gr.name, ids: ids, names: names };
       });
-      groupsByLg[lg] = out;
+      groupsLoaded[lg] = true;
       delete groupsErr[lg];
     }).catch(function() { groupsErr[lg] = 1; });
   }));
@@ -2166,6 +2180,44 @@ function sortByStateThenName(games, byName) {
   return games;
 }
 
+function optMatchesTeam(opt, team) {
+  if (!team) return false;
+  if (opt.tid != null) return String(team.id) === String(opt.tid);
+  return String(team.displayName || '').toLowerCase() === opt.match.toLowerCase();
+}
+function currentScoresOpt() {
+  if (scoresChoice === 'mine') return null;
+  var o = standingsOptions().filter(function(x) { return x.id === scoresChoice; })[0];
+  if (!o) scoresChoice = 'mine';
+  return o || null;
+}
+function onScoresPick(v) { scoresChoice = v; renderScoresView(); }
+
+// Picked a team: that team, its division/conference, Top 25 (college), then everything else in that sport/league.
+function buildTeamSections(opt) {
+  var L = LEAGUES[opt.lg];
+  var grp = groupsByTeam[opt.name] || null;
+  var mineG = [], conf = [], top = [], all = [];
+  (scoresResults || []).forEach(function(r) {
+    if (r.k !== opt.lg) return;
+    r.events.forEach(function(ev) {
+      var comp = ev.competitions && ev.competitions[0];
+      if (!comp || !comp.competitors) return;
+      var g = { k: r.k, ev: ev, comp: comp, state: eventState(ev, comp) };
+      all.push(g);
+      if (comp.competitors.some(function(c) { return optMatchesTeam(opt, c.team); })) mineG.push(g);
+      if (showConf && grp && comp.competitors.some(function(c) { return inGroup(grp, c.team); })) conf.push(g);
+      if (showTop25 && L.college && bestRank(comp) !== null) top.push(g);
+    });
+  });
+  var sections = [];
+  if (mineG.length) sections.push({ title: opt.name, games: sortByStateThenName(mineG, false) });
+  if (conf.length) sections.push({ title: grp.name + ' \u00b7 ' + L.label, games: sortByStateThenName(conf, false) });
+  if (top.length) { top.sort(function(a, b) { return bestRank(a.comp) - bestRank(b.comp); }); sections.push({ title: 'Top 25 \u00b7 ' + L.label, games: top }); }
+  if (all.length) sections.push({ title: 'All ' + L.label, games: sortByStateThenName(all, false) });
+  return sections;
+}
+
 function buildSections() {
   var sections = [];
   var mine = collectWatchedGames();
@@ -2179,7 +2231,7 @@ function buildSections() {
       if (!comp || !comp.competitors) return;
       var g = { k: r.k, ev: ev, comp: comp, state: eventState(ev, comp) };
       if (showConf) {
-        (groupsByLg[r.k] || []).forEach(function(gr) {
+        activeGroups(r.k).forEach(function(gr) {
           if (comp.competitors.some(function(c) { return inGroup(gr, c.team); })) {
             var title = gr.name + ' · ' + L.label;
             (conf[title] = conf[title] || []).push(g);
@@ -2228,7 +2280,11 @@ function renderScoresView() {
   if (!el) return;
   var d = scoresDate();
   var dayLabel = scoresOffsetDays === 0 ? 'Today' : d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-  var h = '<div class="cal-nav"><button class="cal-nav-btn" onclick="shiftScoresDay(-1)">‹</button>' +
+  var sopts = standingsOptions();
+  currentScoresOpt();
+  var h = '<select id="scoresSel" class="sel" onchange="onScoresPick(this.value)"><option value="mine"' + (scoresChoice === 'mine' ? ' selected' : '') + '>My Teams</option>' +
+    sopts.map(function(o) { return '<option value="' + o.id + '"' + (o.id === scoresChoice ? ' selected' : '') + '>' + esc(o.name) + '</option>'; }).join('') + '</select>';
+  h += '<div class="cal-nav"><button class="cal-nav-btn" onclick="shiftScoresDay(-1)">‹</button>' +
     '<div class="cal-month-label">' + esc(dayLabel) + '</div>' +
     '<button class="cal-nav-btn" onclick="shiftScoresDay(1)">›</button></div>';
   h += '<div class="sc-bar"><span>' + (scoresLoading ? 'Updating…' : (scoresUpdated ? 'Updated ' + scoresUpdated.toLocaleTimeString() : '')) + ' · auto-refresh 45s</span>' +
@@ -2238,19 +2294,21 @@ function renderScoresView() {
     '<button class="team-chip' + (showTop25 ? ' active' : '') + '" onclick="togglePref(\'top25\')">Top 25</button></div>';
   if (scoresResults) {
     var failed = scoresResults.filter(function(r) { return r.error; }).map(function(r) { return LEAGUES[r.k].label; });
-    if (failed.length === scoresResults.length) {
+    var allFailed = scoresResults.length > 0 && failed.length === scoresResults.length;
+    if (allFailed) {
       h += '<div class="sc-warn">Couldn\'t reach ESPN. This only works on the hosted page with internet, and ESPN\'s unofficial feed can change without notice.</div>';
     } else if (failed.length) {
       h += '<div class="sc-warn">Couldn\'t load: ' + esc(failed.join(', ')) + '</div>';
     }
-    var gFailed = Object.keys(groupsErr).map(function(k) { return LEAGUES[k].label; });
+    var gFailed = Object.keys(groupsErr).filter(function(k) { return activeTracked().some(function(t) { return t.lg === k; }); }).map(function(k) { return LEAGUES[k].label; });
     if (showConf && gFailed.length) h += '<div class="sc-warn">Couldn\'t load divisions/conferences for: ' + esc(gFailed.join(', ')) + '. Showing your teams only for those.</div>';
-    var sections = buildSections();
+    var selOpt = currentScoresOpt();
+    var sections = selOpt ? buildTeamSections(selOpt) : buildSections();
     if (sections.length) {
       sections.forEach(function(sec) {
         h += '<div class="sc-section">' + esc(sec.title) + ' <span class="sc-count">' + sec.games.length + '</span></div>' + sec.games.map(gameScoreCardHtml).join('');
       });
-    } else if (failed.length !== scoresResults.length) h += '<div class="empty">No games for your teams on this day.</div>';
+    } else if (!allFailed) h += '<div class="empty">' + (selOpt ? 'No games in this league on this day.' : 'No games for your teams on this day.') + '</div>';
   } else if (!scoresLoading) {
     h += '<div class="empty">Loading scores…</div>';
   } else {
@@ -2325,7 +2383,8 @@ var standingsCache = {};
 var standingsState = { loading: false, error: false, html: '' };
 
 function standingsOptions() {
-  var opts = TRACKED.map(function(t, i) { return { id: 't' + i, name: t.name, lg: t.lg, match: t.match, tid: null }; });
+  var opts = [];
+  TRACKED.forEach(function(t, i) { if (!deselectedTeams.has(t.name)) opts.push({ id: 't' + i, name: t.name, lg: t.lg, match: t.match, tid: null }); });
   watchlist.forEach(function(w, i) { opts.push({ id: 'w' + i, name: w.name + ' (' + (LEAGUES[w.lg] ? LEAGUES[w.lg].label : w.lg) + ')', lg: w.lg, match: w.name, tid: w.id }); });
   opts.sort(function(a, b) { return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); });
   return opts;
@@ -2335,7 +2394,8 @@ function renderStandingsView() {
   var el = document.getElementById('standingsView');
   if (!el) return;
   var opts = standingsOptions();
-  if (!standingsChoice) standingsChoice = opts[0].id;
+  if (!opts.length) { el.innerHTML = '<div class="empty">No teams selected. Check a team on the Schedule tab.</div>'; return; }
+  if (!opts.some(function(o) { return o.id === standingsChoice; })) standingsChoice = opts[0].id;
   var sel = '<div class="filter-card"><div class="filter-row-label" style="margin-top:0">Team</div><select id="standingsSel" class="sel" onchange="onStandingsPick(this.value)">' +
     opts.map(function(o) { return '<option value="' + o.id + '"' + (o.id === standingsChoice ? ' selected' : '') + '>' + esc(o.name) + '</option>'; }).join('') +
     '</select><div class="city-hint">Shows the league/conference standings that team plays in.</div></div>';
@@ -2439,6 +2499,7 @@ function buildStandingsHtml(root, lg, opt) {
 
 function loadStandings() {
   var opts = standingsOptions();
+  if (!opts.length) { renderStandingsView(); return; }
   var opt = opts.filter(function(o) { return o.id === standingsChoice; })[0] || opts[0];
   var L = LEAGUES[opt.lg];
   var key = opt.lg + '|' + (opt.tid || opt.match);
