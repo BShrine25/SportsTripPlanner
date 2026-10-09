@@ -117,6 +117,50 @@
   .cal-daynum-lg { font-size: 13px; font-weight: 700; color: #6b7280; margin-bottom: 2px; }
   .cal-bar { border-radius: 5px; padding: 2px 6px; font-size: 10px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cal-bar-more { font-size: 10px; color: #9ca3af; font-weight: 700; }
+
+  .segmented { overflow-x: auto; scrollbar-width: none; }
+  .segmented::-webkit-scrollbar { display: none; }
+  .segmented button { flex: 1 0 auto; padding: 8px 10px; font-size: 12px; white-space: nowrap; }
+  .sel { width: 100%; padding: 10px; border: 1.5px solid #e5e5ea; border-radius: 10px; font-size: 14px; background: #f9f9fb; color: #1c1c1e; margin-bottom: 6px; }
+  .sc-bar { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #8e8e93; margin: 0 2px 8px; }
+  .sc-warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 10px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 10px; }
+  .sc-card { background: white; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .sc-card.is-live { box-shadow: 0 0 0 2px #ef4444, 0 1px 3px rgba(0,0,0,0.05); }
+  .sc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .sc-league { font-size: 10px; font-weight: 800; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sc-badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; }
+  .sc-badge.live { background: #fee2e2; color: #b91c1c; }
+  .sc-badge.final { background: #f3f4f6; color: #4b5563; }
+  .sc-badge.pre { background: #dbeafe; color: #1d4ed8; }
+  .sc-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+  .sc-logo { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
+  .sc-name { flex: 1; font-size: 14px; color: #3a3a3c; min-width: 0; }
+  .sc-row.mine .sc-name { font-weight: 800; color: #1c1c1e; }
+  .sc-rec { font-size: 11px; color: #9ca3af; font-weight: 500; }
+  .sc-score { font-size: 20px; font-weight: 800; min-width: 30px; text-align: right; color: #6b7280; }
+  .sc-row.won .sc-score { color: #1c1c1e; }
+  .sc-detail { font-size: 12px; color: #9ca3af; margin-top: 6px; border-top: 1px solid #f2f2f7; padding-top: 6px; }
+  .sc-section { font-size: 12px; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; padding: 12px 4px 6px; }
+  .sc-count { background: #e5e7eb; color: #4b5563; border-radius: 10px; padding: 1px 7px; font-size: 10px; margin-left: 4px; }
+  .sc-rank { font-size: 11px; font-weight: 800; color: #b45309; margin-right: 2px; }
+  .wl-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .wl-chip { background: #eff6ff; color: #1e40af; font-size: 12px; font-weight: 700; padding: 5px 6px 5px 10px; border-radius: 16px; display: inline-flex; align-items: center; gap: 6px; }
+  .wl-lg { font-size: 10px; color: #6b7280; font-weight: 600; }
+  .wl-x { border: none; background: #dbeafe; color: #1e40af; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; cursor: pointer; }
+  .wl-empty { font-size: 12px; color: #9ca3af; padding: 4px 0; }
+  .wl-add { margin-top: 8px; }
+  .wl-results { max-height: 220px; overflow-y: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .wl-result { text-align: left; padding: 9px 10px; border: 1.5px solid #e5e5ea; border-radius: 10px; background: white; font-size: 14px; cursor: pointer; }
+  .wl-result:disabled { background: #f3f4f6; color: #9ca3af; }
+  .st-card { background: white; border-radius: 14px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .st-title { font-weight: 800; font-size: 14px; margin-bottom: 6px; }
+  .st-scroll { overflow-x: auto; }
+  .st-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .st-table th { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 700; padding: 4px 6px; text-align: right; white-space: nowrap; }
+  .st-table td { padding: 7px 6px; text-align: right; border-top: 1px solid #f2f2f7; white-space: nowrap; }
+  .st-table th.l, .st-table td.l { text-align: left; }
+  .st-table td.l:nth-child(2) { white-space: normal; }
+  .st-table tr.me td { background: #eff6ff; font-weight: 800; color: #1e40af; }
 </style>
 </head>
 <body>
@@ -142,6 +186,8 @@
     <button class="active" id="listTabBtn" onclick="setView('list')">📋 Schedule</button>
     <button id="calTabBtn" onclick="setView('calendar')">🗓️ Calendar</button>
     <button id="tripsTabBtn" onclick="setView('trips')">✈️ Trips</button>
+    <button id="scoresTabBtn" onclick="setView('scores')">📡 Scores</button>
+    <button id="standingsTabBtn" onclick="setView('standings')">📊 Standings</button>
   </div>
 </div>
 
@@ -194,6 +240,9 @@
     </div>
     <div id="tripList"></div>
   </div>
+
+  <div id="scoresView" style="display:none;"></div>
+  <div id="standingsView" style="display:none;"></div>
 </div>
 
 <div class="cal-modal-overlay" id="calModalOverlay">
@@ -1160,6 +1209,14 @@ var builtInGames = []
   .concat(aewGames)
   .concat(wweGames);
 
+// Uniform team naming: pro teams = nickname only, college teams = "School Sport".
+var TEAM_RENAMES = {
+  'Pittsburgh Pirates': 'Pirates',
+  'Cleveland Guardians': 'Guardians',
+  'Ohio State': 'Ohio State Football'
+};
+builtInGames.forEach(function(g) { if (TEAM_RENAMES[g.team]) g.team = TEAM_RENAMES[g.team]; });
+
 var uploadedGames = [];
 var scheduleData = builtInGames.slice();
 
@@ -1382,7 +1439,13 @@ function setView(view) {
   document.getElementById('listFilters').style.display = (view === 'list' || view === 'calendar') ? 'block' : 'none';
   document.getElementById('calendarView').style.display = view === 'calendar' ? 'block' : 'none';
   document.getElementById('tripsView').style.display = view === 'trips' ? 'block' : 'none';
+  document.getElementById('scoresTabBtn').classList.toggle('active', view === 'scores');
+  document.getElementById('standingsTabBtn').classList.toggle('active', view === 'standings');
+  document.getElementById('scoresView').style.display = view === 'scores' ? 'block' : 'none';
+  document.getElementById('standingsView').style.display = view === 'standings' ? 'block' : 'none';
   render();
+  if (view === 'scores') { loadScores(); startScoresTimer(); } else { stopScoresTimer(); }
+  if (view === 'standings') { loadStandings(); }
 }
 
 function toggleTeam(team) {
@@ -1435,7 +1498,7 @@ function monthLabel(dateStr) {
 }
 
 function renderTeamButtons() {
-  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort();
+  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort(function(a, b) { return a.localeCompare(b, undefined, { sensitivity: 'base' }); });
   var container = document.getElementById('teamButtons');
   var activeTeams = teams.filter(function(t) { return !deselectedTeams.has(t); });
   var inactiveTeams = teams.filter(function(t) { return deselectedTeams.has(t); });
@@ -1492,9 +1555,9 @@ function renderList() {
 }
 
 var teamColorOverrides = {
-  'Ohio State': '#dc2626',
-  'Cleveland Guardians': '#7f1d1d',
-  'Pittsburgh Pirates': '#C19A49',
+  'Ohio State Football': '#dc2626',
+  'Guardians': '#7f1d1d',
+  'Pirates': '#C19A49',
   'Steelers': '#FFB612',
   'Penguins': '#111111',
   'Pitt Football': '#0047AB',
@@ -1508,9 +1571,9 @@ var teamColorOverrides = {
   'Duquesne Volleyball': '#0A1F44'
 };
 var teamLetterOverrides = {
-  'Ohio State': 'O',
-  'Cleveland Guardians': 'G',
-  'Pittsburgh Pirates': 'P',
+  'Ohio State Football': 'O',
+  'Guardians': 'G',
+  'Pirates': 'P',
   'Steelers': 'S',
   'Penguins': 'P',
   'Pitt Football': 'P',
@@ -1751,7 +1814,7 @@ function buildCalendarDays() {
 
 function renderCalendar() {
   var games = getFilteredGames();
-  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort();
+  var teams = Array.from(new Set(scheduleData.map(function(g) { return g.team; }))).sort(function(a, b) { return a.localeCompare(b, undefined, { sensitivity: 'base' }); });
 
   var legendHtml = teams.map(function(t) {
     return '<div class="cal-legend-item"><span class="cal-legend-dot" style="background:' + getTeamColor(t) + '"></span>' + t + '</div>';
@@ -1838,7 +1901,9 @@ function render() {
   renderTeamButtons();
   if (currentView === 'list') renderList();
   else if (currentView === 'calendar') renderCalendar();
-  else renderTrips();
+  else if (currentView === 'trips') renderTrips();
+  else if (currentView === 'scores') renderScoresView();
+  else if (currentView === 'standings') renderStandingsView();
 }
 
 function setMaxDays(v) {
@@ -1865,6 +1930,534 @@ document.getElementById('maxDaysSlider').addEventListener('input', function(e) {
 document.getElementById('calDaysSlider').addEventListener('input', function(e) { setMaxDays(Number(e.target.value)); });
 document.getElementById('maxMilesSlider').addEventListener('input', function(e) { setMaxMiles(Number(e.target.value)); });
 document.getElementById('calMilesSlider').addEventListener('input', function(e) { setMaxMiles(Number(e.target.value)); });
+
+/* ===================== LIVE SCORES + STANDINGS (ESPN public endpoints) ===================== */
+var ESPN_SITE = 'https://site.api.espn.com/apis/site/v2/sports/';
+var ESPN_V2 = 'https://site.api.espn.com/apis/v2/sports/';
+
+var LEAGUES = {
+  mlb:    { sport: 'baseball',   league: 'mlb',                       label: 'MLB',            params: '', stGroup: '' },
+  nfl:    { sport: 'football',   league: 'nfl',                       label: 'NFL',            params: '', stGroup: '' },
+  nhl:    { sport: 'hockey',     league: 'nhl',                       label: 'NHL',            params: '', stGroup: '' },
+  cfb:    { sport: 'football',   league: 'college-football',          label: 'College FB (FBS)', params: '&groups=80', stGroup: '80', college: true },
+  cfbfcs: { sport: 'football',   league: 'college-football',          label: 'College FB (FCS)', params: '&groups=81', stGroup: '81', college: true },
+  cbb:    { sport: 'basketball', league: 'mens-college-basketball',   label: "Men's College BB", params: '&groups=50', stGroup: '', college: true },
+  cvb:    { sport: 'volleyball', league: 'womens-college-volleyball', label: "Women's College VB", params: '', stGroup: '', college: true },
+  cbs:    { sport: 'baseball',   league: 'college-baseball',          label: 'College Baseball', params: '', stGroup: '', college: true }
+};
+
+// Teams already in the app. "match" = ESPN displayName.
+var TRACKED = [
+  { name: 'Pirates',             lg: 'mlb',    match: 'Pittsburgh Pirates' },
+  { name: 'Guardians',           lg: 'mlb',    match: 'Cleveland Guardians' },
+  { name: 'Steelers',            lg: 'nfl',    match: 'Pittsburgh Steelers' },
+  { name: 'Penguins',            lg: 'nhl',    match: 'Pittsburgh Penguins' },
+  { name: 'Pitt Football',       lg: 'cfb',    match: 'Pittsburgh Panthers' },
+  { name: 'Ohio State Football', lg: 'cfb',    match: 'Ohio State Buckeyes' },
+  { name: 'Duquesne Football',   lg: 'cfbfcs', match: 'Duquesne Dukes' },
+  { name: 'Pitt Basketball',     lg: 'cbb',    match: 'Pittsburgh Panthers' },
+  { name: 'Duquesne Basketball', lg: 'cbb',    match: 'Duquesne Dukes' },
+  { name: 'Pitt Volleyball',     lg: 'cvb',    match: 'Pittsburgh Panthers' },
+  { name: 'Duquesne Volleyball', lg: 'cvb',    match: 'Duquesne Dukes' },
+  { name: 'Pitt Baseball',       lg: 'cbs',    match: 'Pittsburgh Panthers' }
+];
+
+var WATCH_KEY = 'stp_watchlist_v1';
+function loadWatchlist() {
+  try { var r = localStorage.getItem(WATCH_KEY); var a = r ? JSON.parse(r) : []; return Array.isArray(a) ? a : []; }
+  catch (e) { return []; }
+}
+function saveWatchlist() { try { localStorage.setItem(WATCH_KEY, JSON.stringify(watchlist)); } catch (e) {} }
+var watchlist = loadWatchlist();
+
+function esc(t) {
+  return String(t == null ? '' : t).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function espnFetch(url, ms) {
+  var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timer = setTimeout(function() { if (ctl) ctl.abort(); }, ms || 10000);
+  return fetch(url, ctl ? { signal: ctl.signal } : {}).then(function(r) {
+    clearTimeout(timer);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }, function(e) { clearTimeout(timer); throw e; });
+}
+
+function isWatchedTeam(lg, team) {
+  if (!team) return false;
+  var dn = String(team.displayName || '').toLowerCase();
+  var i;
+  for (i = 0; i < TRACKED.length; i++) {
+    if (TRACKED[i].lg === lg && dn === TRACKED[i].match.toLowerCase()) return true;
+  }
+  for (i = 0; i < watchlist.length; i++) {
+    if (watchlist[i].lg === lg && String(watchlist[i].id) === String(team.id)) return true;
+  }
+  return false;
+}
+
+function leaguesInUse() {
+  var seen = {}, out = [];
+  TRACKED.forEach(function(t) { if (!seen[t.lg]) { seen[t.lg] = 1; out.push(t.lg); } });
+  watchlist.forEach(function(w) { if (LEAGUES[w.lg] && !seen[w.lg]) { seen[w.lg] = 1; out.push(w.lg); } });
+  return out;
+}
+
+/* ---------- Scores ---------- */
+var scoresOffsetDays = 0;
+var scoresResults = null;
+var scoresUpdated = null;
+var scoresTimer = null;
+var scoresLoading = false;
+var watchPanelOpen = false;
+var teamCache = {};
+var addLeague = 'mlb';
+var addQuery = '';
+
+function ymd(d) { return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()); }
+function scoresDate() { var d = new Date(); d.setDate(d.getDate() + scoresOffsetDays); return d; }
+
+function shiftScoresDay(n) {
+  if (n === 0) scoresOffsetDays = 0; else scoresOffsetDays += n;
+  loadScores();
+}
+
+var scoresReq = 0;
+function loadScores() {
+  var my = ++scoresReq;
+  scoresLoading = true;
+  renderScoresView();
+  var dateParam = '&dates=' + ymd(scoresDate());
+  var jobs = leaguesInUse().map(function(k) {
+    var L = LEAGUES[k];
+    var url = ESPN_SITE + L.sport + '/' + L.league + '/scoreboard?limit=400' + L.params + dateParam;
+    return espnFetch(url).then(function(j) { return { k: k, events: (j && j.events) || [] }; })
+      .catch(function() { return { k: k, error: true, events: [] }; });
+  });
+  ensureGroups().then(function() { if (my === scoresReq) renderScoresView(); });
+  Promise.all(jobs).then(function(res) {
+    if (my !== scoresReq) return;
+    scoresResults = res;
+    scoresUpdated = new Date();
+    scoresLoading = false;
+    renderScoresView();
+  });
+}
+
+function startScoresTimer() { stopScoresTimer(); scoresTimer = setInterval(function() { if (currentView === 'scores') loadScores(); }, 45000); }
+function stopScoresTimer() { if (scoresTimer) { clearInterval(scoresTimer); scoresTimer = null; } }
+
+function eventState(ev, comp) {
+  var st = (comp && comp.status) || ev.status || {};
+  return (st.type && st.type.state) || 'pre';
+}
+
+function watchedName(g) {
+  var c = g.comp.competitors.filter(function(x) { return isWatchedTeam(g.k, x.team); })[0] || g.comp.competitors[0];
+  return String((c && c.team && c.team.displayName) || '');
+}
+
+function collectWatchedGames() {
+  var games = [];
+  (scoresResults || []).forEach(function(r) {
+    r.events.forEach(function(ev) {
+      var comp = ev.competitions && ev.competitions[0];
+      if (!comp || !comp.competitors) return;
+      var watched = comp.competitors.some(function(c) { return isWatchedTeam(r.k, c.team); });
+      if (!watched) return;
+      games.push({ k: r.k, ev: ev, comp: comp, state: eventState(ev, comp) });
+    });
+  });
+  var rank = { 'in': 0, 'pre': 1, 'post': 2 };
+  games.sort(function(a, b) {
+    if (rank[a.state] !== rank[b.state]) return rank[a.state] - rank[b.state];
+    var na = watchedName(a), nb = watchedName(b);
+    var c = na.localeCompare(nb, undefined, { sensitivity: 'base' });
+    return c !== 0 ? c : String(a.ev.date).localeCompare(String(b.ev.date));
+  });
+  return games;
+}
+
+function rankBadge(c) {
+  var rk = c.curatedRank && Number(c.curatedRank.current);
+  return (rk >= 1 && rk <= 25) ? '<span class="sc-rank">#' + rk + '</span> ' : '';
+}
+function bestRank(comp) {
+  var best = null;
+  comp.competitors.forEach(function(c) {
+    var rk = c.curatedRank && Number(c.curatedRank.current);
+    if (rk >= 1 && rk <= 25 && (best === null || rk < best)) best = rk;
+  });
+  return best;
+}
+
+function scoreRowHtml(lg, c) {
+  var t = c.team || {};
+  var rec = (c.records && c.records[0] && c.records[0].summary) ? c.records[0].summary : '';
+  var logo = t.logo ? '<img class="sc-logo" src="' + esc(t.logo) + '" alt="" onerror="this.style.visibility=\'hidden\'">' : '<span class="sc-logo"></span>';
+  var cls = 'sc-row' + (isWatchedTeam(lg, t) ? ' mine' : '') + (c.winner ? ' won' : '');
+  var score = (c.score != null && c.score !== '') ? esc(c.score) : '';
+  return '<div class="' + cls + '">' + logo +
+    '<div class="sc-name">' + rankBadge(c) + esc(t.displayName || t.name || '?') + (rec ? ' <span class="sc-rec">' + esc(rec) + '</span>' : '') + '</div>' +
+    '<div class="sc-score">' + score + '</div></div>';
+}
+
+function gameScoreCardHtml(g) {
+  var st = (g.comp.status || g.ev.status || {});
+  var detail = (st.type && (st.type.shortDetail || st.type.detail)) || '';
+  var cs = g.comp.competitors.slice();
+  cs.sort(function(a, b) { return (a.homeAway === 'away' ? 0 : 1) - (b.homeAway === 'away' ? 0 : 1); });
+  var badge = g.state === 'in' ? '<span class="sc-badge live">● LIVE</span>' :
+              g.state === 'post' ? '<span class="sc-badge final">FINAL</span>' : '<span class="sc-badge pre">UPCOMING</span>';
+  var venue = (g.comp.venue && g.comp.venue.fullName) ? ' · ' + esc(g.comp.venue.fullName) : '';
+  return '<div class="sc-card' + (g.state === 'in' ? ' is-live' : '') + '">' +
+    '<div class="sc-top"><span class="sc-league">' + esc(LEAGUES[g.k].label) + '</span>' + badge + '</div>' +
+    cs.map(function(c) { return scoreRowHtml(g.k, c); }).join('') +
+    '<div class="sc-detail">' + esc(detail) + venue + '</div></div>';
+}
+
+/* Default groups: each tracked team's division/conference, derived from ESPN standings. */
+var groupsByLg = {};
+var groupsErr = {};
+var PREF_KEY = 'stp_scores_prefs_v1';
+var showConf = true, showTop25 = true;
+(function() { try { var r = JSON.parse(localStorage.getItem(PREF_KEY) || '{}'); if (r.showConf === false) showConf = false; if (r.showTop25 === false) showTop25 = false; } catch (e) {} })();
+function savePrefs() { try { localStorage.setItem(PREF_KEY, JSON.stringify({ showConf: showConf, showTop25: showTop25 })); } catch (e) {} }
+function togglePref(which) { if (which === 'conf') showConf = !showConf; else showTop25 = !showTop25; savePrefs(); renderScoresView(); }
+
+function inGroup(gr, team) {
+  if (!team) return false;
+  return gr.ids[String(team.id)] === 1 || gr.names[String(team.displayName || '').toLowerCase()] === 1;
+}
+
+function ensureGroups() {
+  var lgs = {};
+  TRACKED.forEach(function(t) { lgs[t.lg] = 1; });
+  return Promise.all(Object.keys(lgs).map(function(lg) {
+    if (groupsByLg[lg]) return null;
+    return getStandingsRaw(lg).then(function(root) {
+      var groups = collectGroups(root || {}, []);
+      var found = {}, out = [];
+      TRACKED.filter(function(t) { return t.lg === lg; }).forEach(function(t) {
+        var opt = { match: t.match, tid: null };
+        var gr = groups.filter(function(g) { return g.entries.some(function(e) { return entryIsTeam(e, opt); }); })[0];
+        if (!gr || found[gr.name]) return;
+        found[gr.name] = 1;
+        var ids = {}, names = {};
+        gr.entries.forEach(function(e) { if (e.team) { ids[String(e.team.id)] = 1; names[String(e.team.displayName || '').toLowerCase()] = 1; } });
+        out.push({ name: gr.name, ids: ids, names: names });
+      });
+      groupsByLg[lg] = out;
+      delete groupsErr[lg];
+    }).catch(function() { groupsErr[lg] = 1; });
+  }));
+}
+
+function sortByStateThenName(games, byName) {
+  var rank = { 'in': 0, 'pre': 1, 'post': 2 };
+  games.sort(function(a, b) {
+    if (rank[a.state] !== rank[b.state]) return rank[a.state] - rank[b.state];
+    if (byName) { var c = watchedName(a).localeCompare(watchedName(b), undefined, { sensitivity: 'base' }); if (c !== 0) return c; }
+    return String(a.ev.date).localeCompare(String(b.ev.date));
+  });
+  return games;
+}
+
+function buildSections() {
+  var sections = [];
+  var mine = collectWatchedGames();
+  if (mine.length) sections.push({ title: 'Your teams', games: mine });
+  var conf = {}, top = {};
+  // A game goes in every section it qualifies for (no de-duplication).
+  (scoresResults || []).forEach(function(r) {
+    var L = LEAGUES[r.k];
+    r.events.forEach(function(ev) {
+      var comp = ev.competitions && ev.competitions[0];
+      if (!comp || !comp.competitors) return;
+      var g = { k: r.k, ev: ev, comp: comp, state: eventState(ev, comp) };
+      if (showConf) {
+        (groupsByLg[r.k] || []).forEach(function(gr) {
+          if (comp.competitors.some(function(c) { return inGroup(gr, c.team); })) {
+            var title = gr.name + ' · ' + L.label;
+            (conf[title] = conf[title] || []).push(g);
+          }
+        });
+      }
+      if (showTop25 && L.college && bestRank(comp) !== null) { (top[r.k] = top[r.k] || []).push(g); }
+    });
+  });
+  Object.keys(conf).sort(function(a, b) { return a.localeCompare(b); }).forEach(function(t) {
+    sections.push({ title: t, games: sortByStateThenName(conf[t], false) });
+  });
+  Object.keys(top).forEach(function(k) {
+    var gs = top[k];
+    gs.sort(function(a, b) { return bestRank(a.comp) - bestRank(b.comp); });
+    sections.push({ title: 'Top 25 \u00b7 ' + LEAGUES[k].label, games: gs });
+  });
+  return sections;
+}
+
+function renderWatchlistHtml() {
+  var order = watchlist.map(function(w, i) { return i; }).sort(function(a, b) {
+    return watchlist[a].name.localeCompare(watchlist[b].name, undefined, { sensitivity: 'base' });
+  });
+  var chips = watchlist.length ? order.map(function(i) {
+    var w = watchlist[i];
+    return '<span class="wl-chip">' + esc(w.name) + ' <span class="wl-lg">' + esc(LEAGUES[w.lg] ? LEAGUES[w.lg].label : w.lg) + '</span>' +
+      '<button class="wl-x" onclick="removeWatch(' + i + ')">✕</button></span>';
+  }).join('') : '<span class="wl-empty">No extra teams yet. Add one for a playoff race.</span>';
+  var h = '<div class="filter-card"><div class="filter-row-label" style="margin-top:0">Extra teams (watchlist)</div>' +
+    '<div class="wl-chips">' + chips + '</div>' +
+    '<button class="chip-action-btn" onclick="toggleWatchPanel()">' + (watchPanelOpen ? '− Close' : '＋ Add team') + '</button>';
+  if (watchPanelOpen) {
+    var opts = Object.keys(LEAGUES).map(function(k) {
+      return '<option value="' + k + '"' + (k === addLeague ? ' selected' : '') + '>' + esc(LEAGUES[k].label) + '</option>';
+    }).join('');
+    h += '<div class="wl-add"><select id="addLeagueSel" onchange="onAddLeague(this.value)" class="sel">' + opts + '</select>' +
+      '<input type="text" id="addTeamInput" placeholder="Search team name..." value="' + esc(addQuery) + '" oninput="onAddQuery(this.value)">' +
+      '<div id="addResults" class="wl-results"></div></div>';
+  }
+  return h + '</div>';
+}
+
+function renderScoresView() {
+  var el = document.getElementById('scoresView');
+  if (!el) return;
+  var d = scoresDate();
+  var dayLabel = scoresOffsetDays === 0 ? 'Today' : d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  var h = '<div class="cal-nav"><button class="cal-nav-btn" onclick="shiftScoresDay(-1)">‹</button>' +
+    '<div class="cal-month-label">' + esc(dayLabel) + '</div>' +
+    '<button class="cal-nav-btn" onclick="shiftScoresDay(1)">›</button></div>';
+  h += '<div class="sc-bar"><span>' + (scoresLoading ? 'Updating…' : (scoresUpdated ? 'Updated ' + scoresUpdated.toLocaleTimeString() : '')) + ' · auto-refresh 45s</span>' +
+    '<span><button class="chip-action-btn" onclick="shiftScoresDay(0)">Today</button><button class="chip-action-btn" onclick="loadScores()">↻ Refresh</button></span></div>';
+  h += '<div class="chip-scroll" style="margin-bottom:8px">' +
+    '<button class="team-chip' + (showConf ? ' active' : '') + '" onclick="togglePref(\'conf\')">Divisions / conferences</button>' +
+    '<button class="team-chip' + (showTop25 ? ' active' : '') + '" onclick="togglePref(\'top25\')">Top 25</button></div>';
+  if (scoresResults) {
+    var failed = scoresResults.filter(function(r) { return r.error; }).map(function(r) { return LEAGUES[r.k].label; });
+    if (failed.length === scoresResults.length) {
+      h += '<div class="sc-warn">Couldn\'t reach ESPN. This only works on the hosted page with internet, and ESPN\'s unofficial feed can change without notice.</div>';
+    } else if (failed.length) {
+      h += '<div class="sc-warn">Couldn\'t load: ' + esc(failed.join(', ')) + '</div>';
+    }
+    var gFailed = Object.keys(groupsErr).map(function(k) { return LEAGUES[k].label; });
+    if (showConf && gFailed.length) h += '<div class="sc-warn">Couldn\'t load divisions/conferences for: ' + esc(gFailed.join(', ')) + '. Showing your teams only for those.</div>';
+    var sections = buildSections();
+    if (sections.length) {
+      sections.forEach(function(sec) {
+        h += '<div class="sc-section">' + esc(sec.title) + ' <span class="sc-count">' + sec.games.length + '</span></div>' + sec.games.map(gameScoreCardHtml).join('');
+      });
+    } else if (failed.length !== scoresResults.length) h += '<div class="empty">No games for your teams on this day.</div>';
+  } else if (!scoresLoading) {
+    h += '<div class="empty">Loading scores…</div>';
+  } else {
+    h += '<div class="empty">Loading scores…</div>';
+  }
+  h += renderWatchlistHtml();
+  // preserve focus in search box while re-rendering
+  var hadFocus = document.activeElement && document.activeElement.id === 'addTeamInput';
+  el.innerHTML = h;
+  if (watchPanelOpen) { renderAddResults(); if (hadFocus) { var inp = document.getElementById('addTeamInput'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } } }
+}
+
+function toggleWatchPanel() { watchPanelOpen = !watchPanelOpen; if (watchPanelOpen) ensureTeamList(addLeague); renderScoresView(); }
+function onAddLeague(v) { addLeague = v; addQuery = ''; ensureTeamList(v); renderScoresView(); }
+function onAddQuery(v) { addQuery = v; renderAddResults(); }
+function removeWatch(i) { watchlist.splice(i, 1); saveWatchlist(); renderScoresView(); loadScoresSoon(); }
+function loadScoresSoon() { loadScores(); }
+
+function ensureTeamList(k) {
+  if (teamCache[k] && (teamCache[k].teams || teamCache[k].loading)) return;
+  var L = LEAGUES[k];
+  teamCache[k] = { loading: true };
+  espnFetch(ESPN_SITE + L.sport + '/' + L.league + '/teams?limit=500' + L.params).then(function(j) {
+    var list = [];
+    var lgs = (j && j.sports && j.sports[0] && j.sports[0].leagues) || [];
+    lgs.forEach(function(l) { (l.teams || []).forEach(function(t) { if (t.team) list.push({ id: t.team.id, name: t.team.displayName, abbr: t.team.abbreviation }); }); });
+    list.sort(function(a, b) { return a.name.localeCompare(b.name); });
+    teamCache[k] = { teams: list };
+    if (watchPanelOpen && addLeague === k) renderAddResults();
+  }).catch(function() { teamCache[k] = { error: true }; if (watchPanelOpen && addLeague === k) renderAddResults(); });
+}
+
+function renderAddResults() {
+  var box = document.getElementById('addResults');
+  if (!box) return;
+  var c = teamCache[addLeague];
+  if (!c || c.loading) { box.innerHTML = '<div class="wl-empty">Loading teams…</div>'; return; }
+  if (c.error) { box.innerHTML = '<div class="wl-empty">Couldn\'t load team list. <button class="chip-action-btn" onclick="teamCache[addLeague]=null;ensureTeamList(addLeague);renderAddResults()">Retry</button></div>'; return; }
+  var q = addQuery.trim().toLowerCase();
+  var matches = c.teams.filter(function(t) { return !q || t.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 25);
+  if (!matches.length) { box.innerHTML = '<div class="wl-empty">No match.</div>'; return; }
+  box.innerHTML = matches.map(function(t) {
+    var already = watchlist.some(function(w) { return w.lg === addLeague && String(w.id) === String(t.id); });
+    return '<button class="wl-result" ' + (already ? 'disabled' : 'onclick="addWatch(\'' + t.id + '\')"') + '>' + esc(t.name) + (already ? ' ✓' : '') + '</button>';
+  }).join('');
+}
+
+function addWatch(id) {
+  var c = teamCache[addLeague];
+  var t = c && c.teams && c.teams.filter(function(x) { return String(x.id) === String(id); })[0];
+  if (!t) return;
+  watchlist.push({ lg: addLeague, id: t.id, name: t.name, abbr: t.abbr });
+  saveWatchlist();
+  loadScoresSoon();
+}
+
+/* ---------- Standings ---------- */
+var standingsRawCache = {};
+function getStandingsRaw(lg) {
+  var L = LEAGUES[lg];
+  var c = standingsRawCache[lg];
+  if (c && (Date.now() - c.t) < 600000) return c.p;
+  var url = ESPN_V2 + L.sport + '/' + L.league + '/standings?level=3' + (L.stGroup ? '&group=' + L.stGroup : '');
+  var p = espnFetch(url);
+  standingsRawCache[lg] = { t: Date.now(), p: p };
+  p.catch(function() { if (standingsRawCache[lg] && standingsRawCache[lg].p === p) delete standingsRawCache[lg]; });
+  return p;
+}
+
+var standingsChoice = '';
+var standingsCache = {};
+var standingsState = { loading: false, error: false, html: '' };
+
+function standingsOptions() {
+  var opts = TRACKED.map(function(t, i) { return { id: 't' + i, name: t.name, lg: t.lg, match: t.match, tid: null }; });
+  watchlist.forEach(function(w, i) { opts.push({ id: 'w' + i, name: w.name + ' (' + (LEAGUES[w.lg] ? LEAGUES[w.lg].label : w.lg) + ')', lg: w.lg, match: w.name, tid: w.id }); });
+  opts.sort(function(a, b) { return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); });
+  return opts;
+}
+
+function renderStandingsView() {
+  var el = document.getElementById('standingsView');
+  if (!el) return;
+  var opts = standingsOptions();
+  if (!standingsChoice) standingsChoice = opts[0].id;
+  var sel = '<div class="filter-card"><div class="filter-row-label" style="margin-top:0">Team</div><select id="standingsSel" class="sel" onchange="onStandingsPick(this.value)">' +
+    opts.map(function(o) { return '<option value="' + o.id + '"' + (o.id === standingsChoice ? ' selected' : '') + '>' + esc(o.name) + '</option>'; }).join('') +
+    '</select><div class="city-hint">Shows the league/conference standings that team plays in.</div></div>';
+  var body;
+  if (standingsState.loading) body = '<div class="empty">Loading standings…</div>';
+  else if (standingsState.error) body = '<div class="sc-warn">' + esc(standingsState.msg || 'Standings not available.') + '</div>';
+  else body = standingsState.html;
+  el.innerHTML = sel + body;
+}
+
+function onStandingsPick(id) { standingsChoice = id; loadStandings(); }
+
+function collectGroups(node, out) {
+  if (!node) return out;
+  if (node.standings && node.standings.entries && node.standings.entries.length) out.push({ name: node.name || node.abbreviation || '', entries: node.standings.entries });
+  (node.children || []).forEach(function(c) { collectGroups(c, out); });
+  return out;
+}
+
+function entryIsTeam(e, opt) {
+  var t = e.team || {};
+  if (opt.tid != null) return String(t.id) === String(opt.tid);
+  return String(t.displayName || '').toLowerCase() === opt.match.toLowerCase();
+}
+
+function findStat(entry, names) {
+  var st = entry.stats || [];
+  for (var i = 0; i < names.length; i++) {
+    var n = names[i].toLowerCase();
+    for (var j = 0; j < st.length; j++) {
+      var s = st[j];
+      var cands = [s.name, s.abbreviation, s.shortDisplayName, s.displayName, s.type];
+      for (var k = 0; k < cands.length; k++) { if (cands[k] && String(cands[k]).toLowerCase() === n) return s; }
+    }
+  }
+  return null;
+}
+function statDisplay(s) { if (!s) return '–'; return s.displayValue != null && s.displayValue !== '' ? s.displayValue : (s.value != null ? s.value : '–'); }
+function statNum(entry, names) { var s = findStat(entry, names); if (!s) return null; var v = Number(s.value); return isNaN(v) ? null : v; }
+
+function columnsFor(lg) {
+  if (lg === 'mlb') return [['W', ['wins']], ['L', ['losses']], ['PCT', ['winPercent', 'pct']], ['GB', ['gamesBehind', 'gb']]];
+  if (lg === 'nfl') return [['W', ['wins']], ['L', ['losses']], ['T', ['ties']], ['PCT', ['winPercent']]];
+  if (lg === 'nhl') return [['GP', ['gamesPlayed', 'gp']], ['W', ['wins']], ['L', ['losses']], ['OTL', ['otLosses', 'otl']], ['PTS', ['points', 'pts']]];
+  return [['Conf', ['vs. Conf.', 'vs conf.', 'conference', 'vsconf']], ['Overall', ['overall', 'total']]];
+}
+
+function primaryKey(entry, lg) {
+  if (lg === 'nhl') { var p = statNum(entry, ['points', 'pts']); if (p != null) return p; }
+  if (lg !== 'mlb' && lg !== 'nfl' && lg !== 'nhl') {
+    var cs = findStat(entry, ['vs. Conf.', 'vs conf.', 'conference']);
+    if (cs && cs.displayValue) { var m = String(cs.displayValue).match(/^(\d+)-(\d+)/); if (m) { var tot = Number(m[1]) + Number(m[2]); if (tot > 0) return Number(m[1]) / tot; } }
+  }
+  var w = statNum(entry, ['winPercent', 'pct']);
+  return w == null ? -1 : w;
+}
+
+function sortEntries(entries, lg) {
+  var arr = entries.slice();
+  arr.sort(function(a, b) {
+    var sa = statNum(a, ['playoffSeed', 'rank']), sb = statNum(b, ['playoffSeed', 'rank']);
+    if (sa != null && sb != null && sa > 0 && sb > 0 && sa !== sb) return sa - sb;
+    return primaryKey(b, lg) - primaryKey(a, lg);
+  });
+  return arr;
+}
+
+function groupTableHtml(g, lg, opt) {
+  var cols = columnsFor(lg);
+  var entries = sortEntries(g.entries, lg);
+  var any = entries.some(function(e) { return cols.some(function(c) { return findStat(e, c[1]); }); });
+  if (!any) {
+    // fallback: show the first few stats ESPN gave us
+    var first = (entries[0] && entries[0].stats || []).slice(0, 4);
+    cols = first.map(function(s) { return [s.shortDisplayName || s.abbreviation || s.name, [s.name]]; });
+  }
+  var h = '<div class="st-card"><div class="st-title">' + esc(g.name) + '</div><div class="st-scroll"><table class="st-table"><thead><tr><th class="l">#</th><th class="l">Team</th>' +
+    cols.map(function(c) { return '<th>' + esc(c[0]) + '</th>'; }).join('') + '</tr></thead><tbody>';
+  entries.forEach(function(e, i) {
+    var t = e.team || {};
+    h += '<tr' + (entryIsTeam(e, opt) ? ' class="me"' : '') + '><td class="l">' + (i + 1) + '</td><td class="l">' + esc(t.displayName || t.name || '?') + '</td>' +
+      cols.map(function(c) { return '<td>' + esc(statDisplay(findStat(e, c[1]))) + '</td>'; }).join('') + '</tr>';
+  });
+  return h + '</tbody></table></div></div>';
+}
+
+function buildStandingsHtml(root, lg, opt) {
+  var tops = (root.children && root.children.length) ? root.children : [root];
+  var chosen = null;
+  for (var i = 0; i < tops.length && !chosen; i++) {
+    var gs = collectGroups(tops[i], []);
+    for (var j = 0; j < gs.length; j++) {
+      if (gs[j].entries.some(function(e) { return entryIsTeam(e, opt); })) { chosen = { top: tops[i], groups: gs }; break; }
+    }
+  }
+  if (!chosen) return null;
+  var h = '<div class="sc-bar"><span><b>' + esc(chosen.top.name || LEAGUES[lg].label) + '</b></span></div>';
+  chosen.groups.forEach(function(g) { h += groupTableHtml(g, lg, opt); });
+  return h;
+}
+
+function loadStandings() {
+  var opts = standingsOptions();
+  var opt = opts.filter(function(o) { return o.id === standingsChoice; })[0] || opts[0];
+  var L = LEAGUES[opt.lg];
+  var key = opt.lg + '|' + (opt.tid || opt.match);
+  var cached = standingsCache[key];
+  if (cached && (Date.now() - cached.t) < 300000) { standingsState = { loading: false, error: false, html: cached.html }; renderStandingsView(); return; }
+  standingsState = { loading: true };
+  renderStandingsView();
+  var url = ESPN_V2 + L.sport + '/' + L.league + '/standings?level=3' + (L.stGroup ? '&group=' + L.stGroup : '');
+  getStandingsRaw(opt.lg).then(function(j) {
+    var html = buildStandingsHtml(j || {}, opt.lg, opt);
+    if (!html) { standingsState = { loading: false, error: true, msg: 'No standings found for ' + opt.name + '. ESPN may not publish them for this league or right now.' }; }
+    else { standingsCache[key] = { t: Date.now(), html: html }; standingsState = { loading: false, error: false, html: html }; }
+    if (standingsChoice === opt.id) renderStandingsView();
+  }).catch(function() {
+    standingsState = { loading: false, error: true, msg: 'Couldn\'t load standings. Needs internet on the hosted page, and ESPN\'s unofficial feed can change.' };
+    if (standingsChoice === opt.id) renderStandingsView();
+  });
+}
+/* ===================== END LIVE SCORES + STANDINGS ===================== */
 
 render();
 </script>
